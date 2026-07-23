@@ -4,6 +4,7 @@ import FeaturedProviders from "@/components/home/FeaturedProviders";
 import Testimonials from "@/components/home/Testimonials";
 import CTA from "@/components/home/CTA";  
 import HowItWorks from "@/components/home/HowItWorks";
+export const dynamic = "force-dynamic";
 export default function HomePage() {
   return (
     <div className="overflow-hidden">
