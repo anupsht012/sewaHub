@@ -481,7 +481,7 @@ export default async function ServicesPage({
 
 
 
-                    <Button className="mt-6 w-full">
+                    <Button className="mt-6 w-full cursor-pointer">
 
 
                       View Details

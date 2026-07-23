@@ -208,7 +208,7 @@ export default async function FeaturedProviders() {
 
                   <Link href="/services">
 
-                    <Button className="mt-6 w-full">
+                    <Button className="mt-6 w-full cursor-pointer ">
                       View Services
                     </Button>
 

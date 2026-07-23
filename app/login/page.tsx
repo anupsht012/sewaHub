@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Eye, EyeOff } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
+import { toast } from "sonner";
+import Link from "next/link";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -18,39 +20,39 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-async function handleSubmit(e: React.FormEvent) {
-  e.preventDefault();
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
 
-  setLoading(true);
+    setLoading(true);
 
-  const { error } = await authClient.signIn.email({
-    email: form.email,
-    password: form.password,
-  });
+    const { error } = await authClient.signIn.email({
+      email: form.email,
+      password: form.password,
+    });
 
-  if (error) {
+    if (error) {
+      setLoading(false);
+      toast.error(error.message);
+      return;
+    }
+    toast.success("Logged in successfully!");
+    // Get the logged-in user
+    const session = await authClient.getSession();
+
     setLoading(false);
-    alert(error.message);
-    return;
+
+    const role = (session.data?.user as { role?: string } | undefined)?.role;
+
+    router.refresh();
+
+    if (role === "ADMIN") {
+      router.push("/admin/dashboard");
+    } else if (role === "PROVIDER") {
+      router.push("/provider");
+    } else {
+      router.push("/dashboard");
+    }
   }
-
-  // Get the logged-in user
-  const session = await authClient.getSession();
-
-  setLoading(false);
-
-  const role = (session.data?.user as { role?: string } | undefined)?.role;
-
-  router.refresh();
-
-  if (role === "ADMIN") {
-    router.push("/admin/dashboard");
-  } else if (role === "PROVIDER") {
-    router.push("/provider");
-  } else {
-    router.push("/dashboard");
-  }
-}
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50 px-6">
@@ -121,7 +123,15 @@ async function handleSubmit(e: React.FormEvent) {
             {loading ? "Logging in..." : "Login"}
           </Button>
 
+          <div className="mt-4 text-center text-sm text-gray-500">
+            Don't have an account?{" "}
+            <Link href="/register"
+              className="font-medium text-blue-600 hover:underline"
+            >
 
+              Register Here
+            </Link>
+          </div>
         </form>
 
 
@@ -130,3 +140,4 @@ async function handleSubmit(e: React.FormEvent) {
     </div>
   );
 }
+

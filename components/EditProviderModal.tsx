@@ -65,8 +65,7 @@ async function updateProfile(e: React.FormEvent) {
 
   } catch (error) {
 
-    console.error("UPDATE ERROR:", error);
-    alert("Something went wrong");
+    toast.error("Something went wrong");
 
   } finally {
 
@@ -82,6 +81,7 @@ async function updateProfile(e: React.FormEvent) {
       <Button
         variant="outline"
         onClick={() => setOpen(true)}
+        className="cursor-pointer mt-2"
       >
         Edit Profile
       </Button>

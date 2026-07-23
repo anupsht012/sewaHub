@@ -86,7 +86,7 @@ export default function EditServiceModal({
 
       <DialogTrigger>
 
-        <Button variant="outline">
+        <Button variant="outline" className="cursor-pointer">
           Edit
         </Button>
 
@@ -148,7 +148,7 @@ export default function EditServiceModal({
          
  <Button
            type="submit"
-           className="w-full"
+           className="w-full cursor-pointer"
            disabled={loading}
          >
            {loading ? "Saving..." : "Save Changes"}

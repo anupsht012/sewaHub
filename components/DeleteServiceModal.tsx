@@ -72,7 +72,7 @@ router.refresh();
 
       <AlertDialogTrigger>
 
-        <Button variant="destructive">
+        <Button variant="destructive" className="cursor-pointer">
           Delete
         </Button>
 
@@ -84,7 +84,7 @@ router.refresh();
 
         <AlertDialogHeader>
 
-          <AlertDialogTitle>
+          <AlertDialogTitle >
             Delete service?
           </AlertDialogTitle>
 
@@ -101,7 +101,7 @@ router.refresh();
         <AlertDialogFooter>
 
 
-          <AlertDialogCancel>
+          <AlertDialogCancel className="cursor-pointer">
             Cancel
           </AlertDialogCancel>
 
@@ -109,6 +109,7 @@ router.refresh();
           <AlertDialogAction
             onClick={deleteService}
             disabled={loading}
+            className="cursor-pointer"
           >
             {loading ? "Deleting..." : "Delete"}
           </AlertDialogAction>

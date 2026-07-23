@@ -83,7 +83,7 @@ export default function AddServiceModal() {
 
       <DialogTrigger>
 
-        <Button>
+        <Button className="cursor-pointer">
           + Add Service
         </Button>
 

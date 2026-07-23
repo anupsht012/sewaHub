@@ -240,6 +240,7 @@ export default function HowItWorks() {
                   transition
                   group-hover:bg-blue-600
                   group-hover:text-white
+                  cursor-pointer
                   ">
 
                     {step.button}

@@ -102,7 +102,7 @@ export default function BookServiceModal({
     <Dialog open={open} onOpenChange={setOpen}>
 
       <DialogTrigger >
-        <Button className="w-full">
+        <Button className="w-full cursor-pointer">
           Book Now
         </Button>
       </DialogTrigger>

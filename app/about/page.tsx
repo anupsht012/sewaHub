@@ -82,7 +82,7 @@ export default function AboutPage() {
 
               <Button
                 size="lg"
-                className="bg-white text-blue-600 hover:bg-gray-100"
+                className="bg-white text-blue-600 hover:bg-gray-100 cursor-pointer"
               >
 
                 Find Services
@@ -98,7 +98,7 @@ export default function AboutPage() {
               <Button
                 size="lg"
                 variant="outline"
-                className="border-white text-black hover:bg-white hover:text-blue-600"
+                className="border-white text-black hover:bg-white hover:text-blue-600 cursor-pointer"
               >
 
                 Become a Provider
@@ -286,7 +286,7 @@ export default function AboutPage() {
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
 
 
-            {features.map((item)=>{
+            {features?.map((item)=>{
 
 
               const Icon=item.icon;
@@ -376,7 +376,7 @@ export default function AboutPage() {
 
               <Button
 
-                className="mt-6 bg-white text-blue-600 hover:bg-gray-100"
+                className="mt-6 bg-white text-blue-600 hover:bg-gray-100 cursor-pointer"
 
               >
 

@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Eye, EyeOff } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
+import { toast } from "sonner";
+import Link from "next/link";
 
 export default function RegisterPage() {
 
@@ -23,39 +25,39 @@ export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
 
 
-async function handleSubmit(e: React.FormEvent) {
-  e.preventDefault();
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
 
-  setLoading(true);
+    setLoading(true);
 
- const { data, error } = await authClient.signUp.email({
-  name: form.name,
-  email: form.email,
-  password: form.password,
-});
+    const { data, error } = await authClient.signUp.email({
+      name: form.name,
+      email: form.email,
+      password: form.password,
+    });
 
-  setLoading(false);
+    setLoading(false);
 
-  if (error) {
-  console.log("BETTER AUTH ERROR:", error);
-  alert(JSON.stringify(error));
-  return;
-}
+    if (error) {
+      console.log("BETTER AUTH ERROR:", error);
+      toast.error(JSON.stringify(error));
+      return;
+    }
 
-  alert("Account created successfully!");
+    toast.success("Account created successfully!");
 
-await fetch("/api/user/update-role", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-  },
-  body: JSON.stringify({
-    role: form.role,
-  }),
-});
+    await fetch("/api/user/update-role", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        role: form.role,
+      }),
+    });
 
-router.push("/login");
-}
+    router.push("/login");
+  }
 
 
 
@@ -185,7 +187,16 @@ router.push("/login");
 
           </Button>
 
+          <div>
+            Already have an account?{" "}
+            <Link
+              href="/login"
+               className="font-medium text-blue-600 hover:underline"
+            >
+              Login here
+            </Link>
 
+          </div>
 
         </form>
 

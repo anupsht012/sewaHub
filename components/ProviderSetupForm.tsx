@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
 
 
 export default function ProviderSetupForm() {
@@ -42,12 +43,12 @@ export default function ProviderSetupForm() {
 
 
             if (!res.ok) {
-                alert(data.error || "Something went wrong");
+                toast.error(data.error || "Something went wrong");
                 return;
             }
 
 
-            alert("Provider profile created!");
+            toast.success("Provider profile created!");
 
             router.push("/provider/dashboard");
             router.refresh();
@@ -56,7 +57,7 @@ export default function ProviderSetupForm() {
         } catch (error) {
 
             console.error("SETUP ERROR:", error);
-            alert("Network error");
+            toast.error("Network error");
 
         } finally {
 

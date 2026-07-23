@@ -201,7 +201,7 @@ export default function Navbar() {
 
               <Link href={dashboardLink}>
 
-                <Button>
+                <Button className="cursor-pointer">
 
                   Dashboard
 
@@ -215,7 +215,7 @@ export default function Navbar() {
               <Button
 
                 variant="destructive"
-
+className='cursor-pointer'
                 onClick={handleLogout}
 
               >
@@ -236,7 +236,7 @@ export default function Navbar() {
 
               <Link href="/login">
 
-                <Button variant="outline">
+                <Button variant="outline" className='cursor-pointer'>
 
                   Login
 
@@ -248,7 +248,7 @@ export default function Navbar() {
 
               <Link href="/register">
 
-                <Button>
+                <Button className='cursor-pointer'>
 
                   Get Started
 
@@ -372,7 +372,7 @@ export default function Navbar() {
 
                   <Link href={dashboardLink}>
 
-                    <Button className="w-full">
+                    <Button className="w-full cursor-pointer">
 
                       Dashboard
 
@@ -386,7 +386,7 @@ export default function Navbar() {
 
                     variant="destructive"
 
-                    className="w-full"
+                    className="w-full cursor-pointer"
 
                     onClick={handleLogout}
 
