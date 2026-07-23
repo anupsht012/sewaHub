@@ -70,7 +70,7 @@ router.refresh();
 
     <AlertDialog>
 
-      <AlertDialogTrigger asChild>
+      <AlertDialogTrigger>
 
         <Button variant="destructive">
           Delete

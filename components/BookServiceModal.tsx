@@ -140,7 +140,6 @@ export default function BookServiceModal({
                 mode="single"
                 selected={bookingDate}
                 onSelect={setBookingDate}
-                initialFocus
               />
 
             </PopoverContent>

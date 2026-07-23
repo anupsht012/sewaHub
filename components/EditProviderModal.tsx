@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 
 export default function EditProviderModal({
@@ -50,12 +51,12 @@ async function updateProfile(e: React.FormEvent) {
 
 
     if (!res.ok) {
-      alert(data.error || "Update failed");
+     toast.error(data.error || "Update failed");
       return;
     }
 
 
-    alert("Profile updated successfully");
+    toast.success("Profile updated successfully");
 
     setOpen(false);
 
@@ -92,7 +93,7 @@ async function updateProfile(e: React.FormEvent) {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
 
 
-          <div className="w-full max-w-md rounded-3xl bg-white p-8 shadow-xl">
+          <div className="w-full max-w-md rounded-4xl bg-white p-8 shadow-xl">
 
 
             <h2 className="text-2xl font-bold">
@@ -103,12 +104,12 @@ async function updateProfile(e: React.FormEvent) {
 
             <form
               onSubmit={updateProfile}
-              className="mt-6 space-y-4"
+              className="mt-6 space-y-5"
             >
 
 
               <textarea
-                className="w-full rounded-md border p-3"
+                className="w-full rounded-md border my-3 p-5"
                 placeholder="About your service"
                 value={bio}
                 onChange={(e)=>

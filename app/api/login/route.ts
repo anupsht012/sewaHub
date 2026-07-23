@@ -30,9 +30,20 @@ export async function POST(req: Request) {
   }
 
 
+  if (!user.password) {
+    return NextResponse.json(
+      {
+        message: "Invalid password",
+      },
+      {
+        status: 400,
+      }
+    );
+  }
+
   const passwordMatch = await bcrypt.compare(
     password,
-    user.password!
+    user.password
   );
 
 
@@ -59,7 +70,7 @@ export async function POST(req: Request) {
       expiresAt: new Date(
         Date.now() + 1000 * 60 * 60 * 24 * 7
       ),
-      id: sessionToken,
+      token: sessionToken,
     },
   });
 

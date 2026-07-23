@@ -17,6 +17,15 @@ const navLinks = [
 ];
 
 
+interface NavUser {
+  id: string;
+  name: string;
+  email: string;
+  emailVerified: boolean;
+  image?: string | null;
+  role?: "CUSTOMER" | "PROVIDER" | "ADMIN";
+}
+
 export default function Navbar() {
 
 
@@ -32,7 +41,7 @@ export default function Navbar() {
   } = authClient.useSession();
 
 
-  const user = session?.user;
+  const user = (session?.user as unknown) as NavUser | undefined;
 
 
 

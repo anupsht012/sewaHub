@@ -81,7 +81,7 @@ export default function AddServiceModal() {
 
     <Dialog open={open} onOpenChange={setOpen}>
 
-      <DialogTrigger asChild>
+      <DialogTrigger>
 
         <Button>
           + Add Service

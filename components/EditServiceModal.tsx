@@ -84,7 +84,7 @@ export default function EditServiceModal({
 
     <Dialog open={open} onOpenChange={setOpen}>
 
-      <DialogTrigger asChild>
+      <DialogTrigger>
 
         <Button variant="outline">
           Edit
