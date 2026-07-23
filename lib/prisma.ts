@@ -7,8 +7,12 @@ const globalForPrisma = globalThis as unknown as {
 };
 
 
+if (!process.env.DATABASE_URL) {
+  throw new Error("DATABASE_URL missing");
+}
+
 const adapter = new PrismaPg({
-  connectionString: process.env.DATABASE_URL!,
+  connectionString: process.env.DATABASE_URL,
 });
 
 
