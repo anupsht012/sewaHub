@@ -219,7 +219,7 @@ export default async function AdminDashboardPage() {
           ) : (
 
 
-            recentBookings.map((booking)=>(
+            recentBookings.map((booking:any)=>(
 
               <div
                 key={booking.id}
