@@ -160,7 +160,7 @@ export default async function DashboardPage() {
 
 
 
-              bookings.map((booking) => (
+              bookings?.map((booking:any) => (
 
 
                 <div

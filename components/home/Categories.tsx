@@ -168,7 +168,7 @@ export default function Categories() {
 
 
 
-            {categories.map((category)=>{
+            {categories?.map((category)=>{
 
 
               const Icon = category.icon;

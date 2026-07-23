@@ -213,7 +213,7 @@ export default async function ProviderDashboardPage() {
               <div className="mt-6 grid gap-4 md:grid-cols-2">
 
 
-                {provider.services.map((service)=>(
+                {provider?.services?.map((service:any)=>(
 
 
                   <div
@@ -359,10 +359,10 @@ export default async function ProviderDashboardPage() {
 
 
 
-                provider.services.map((service)=>(
+                provider?.services?.map((service:any)=>(
 
 
-                  service.reviews.map((review)=>(
+                  service?.reviews?.map((review:any)=>(
 
 
                     <div

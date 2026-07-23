@@ -76,7 +76,7 @@ export default async function FeaturedProviders() {
 
 
 
-          {providers.map((provider)=>{
+          {providers?.map((provider)=>{
 
 
             const allReviews =

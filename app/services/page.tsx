@@ -245,7 +245,7 @@ export default async function ServicesPage({
 
 
 
-            {services.map((service)=>{
+            {services?.map((service:any)=>{
 
 
 

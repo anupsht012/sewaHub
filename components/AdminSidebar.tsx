@@ -104,7 +104,7 @@ export default function AdminSidebar() {
       >
 
 
-        {links.map((link)=>{
+        {links?.map((link)=>{
 
 
           const Icon = link.icon;

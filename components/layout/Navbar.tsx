@@ -151,7 +151,7 @@ export default function Navbar() {
         <nav className="hidden items-center gap-8 md:flex">
 
 
-          {navLinks.map((item)=>(
+          {navLinks?.map((item)=>(
 
 
             <Link
@@ -327,7 +327,7 @@ export default function Navbar() {
 
 
 
-            {navLinks.map((item)=>(
+            {navLinks?.map((item)=>(
 
 
               <Link

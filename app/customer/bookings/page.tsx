@@ -52,7 +52,7 @@ export default async function CustomerBookingsPage() {
 
           ) : (
 
-            bookings.map((booking) => (
+            bookings?.map((booking:any) => (
 
               <div
                 key={booking.id}

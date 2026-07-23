@@ -75,7 +75,7 @@ export default async function FeaturedServices() {
 
 
 
-                    {services.map((service) => {
+                    {services?.map((service:any) => {
 
 
 

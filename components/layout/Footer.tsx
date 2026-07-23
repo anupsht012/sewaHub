@@ -152,7 +152,7 @@ export default function Footer() {
             ">
 
 
-              {links.map((link)=>(
+              {links?.map((link)=>(
 
 
                 <Link

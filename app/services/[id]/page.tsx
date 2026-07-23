@@ -203,7 +203,7 @@ export default async function ServiceDetailsPage({
                 <div className="mt-5 space-y-4">
 
 
-                  {service.reviews.map((review)=>(
+                  {service?.reviews?.map((review:any)=>(
 
 
                     <div
@@ -412,7 +412,7 @@ export default async function ServiceDetailsPage({
 
 
 
-              {relatedServices.map((item)=>(
+              {relatedServices?.map((item:any)=>(
 
 
 

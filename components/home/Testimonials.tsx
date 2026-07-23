@@ -79,7 +79,7 @@ export default async function Testimonials() {
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
 
 
-            {reviews.map((review)=>(
+            {reviews?.map((review)=>(
 
 
               <div

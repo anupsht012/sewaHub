@@ -80,7 +80,7 @@ export default function ProviderBookings() {
     <div className="mt-6 space-y-4">
 
 
-      {bookings.map((booking) => (
+      {bookings?.map((booking) => (
 
         <div
           key={booking.id}

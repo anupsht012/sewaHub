@@ -275,7 +275,7 @@ export default async function AdminDashboardPage() {
         <div className="mt-5 space-y-4">
 
 
-          {recentUsers.map((user)=>(
+          {recentUsers.map((user:any)=>(
 
 
             <div
