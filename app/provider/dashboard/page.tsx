@@ -121,7 +121,7 @@ export default async function ProviderDashboardPage() {
             <div>
 
 
-              {provider.verified ? (
+              {provider?.verified ? (
 
                 <span className="rounded-full bg-green-100 px-4 py-2 text-green-700">
                   Verified
@@ -197,7 +197,7 @@ export default async function ProviderDashboardPage() {
 
 
           {
-            provider.services.length === 0 ? (
+            provider?.services?.length === 0 ? (
 
 
               <p className="mt-6 text-gray-500">
@@ -213,7 +213,7 @@ export default async function ProviderDashboardPage() {
               <div className="mt-6 grid gap-4 md:grid-cols-2">
 
 
-                {provider?.services?.map((service:any)=>(
+                {provider?.services?.map((service) => (
 
 
                   <div
@@ -359,10 +359,10 @@ export default async function ProviderDashboardPage() {
 
 
 
-                provider?.services?.map((service:any)=>(
+                provider?.services?.map((service) => (
 
 
-                  service?.reviews?.map((review:any)=>(
+                  service?.reviews?.map((review) => (
 
 
                     <div
