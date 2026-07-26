@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Menu, X } from "lucide-react";
+import { Menu, X, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
@@ -26,12 +26,14 @@ interface NavUser {
   role?: "CUSTOMER" | "PROVIDER" | "ADMIN";
 }
 
+
 export default function Navbar() {
 
 
   const router = useRouter();
 
   const [open, setOpen] = useState(false);
+
 
 
   const {
@@ -41,21 +43,62 @@ export default function Navbar() {
   } = authClient.useSession();
 
 
-  const user = (session?.user as unknown) as NavUser | undefined;
+
+  const user =
+    session?.user as NavUser | undefined;
 
 
 
-  const dashboardLink =
+  const userLinks =
     user?.role === "PROVIDER"
-      ? "/provider/dashboard"
+      ? [
+          {
+            name: "Provider Dashboard",
+            href: "/provider/dashboard",
+          },
+          {
+            name: "My Services",
+            href: "/provider/services",
+          },
+          {
+            name: "My Offers",
+            href: "/provider/offers",
+          },
+        ]
+
       : user?.role === "ADMIN"
-      ? "/admin/dashboard"
-      : "/dashboard";
+
+      ? [
+          {
+            name: "Admin Panel",
+            href: "/admin/dashboard",
+          },
+        ]
+
+      : [
+
+          {
+            name: "Dashboard",
+            href: "/dashboard",
+          },
+
+          {
+            name: "My Requests",
+            href: "/dashboard/requests",
+          },
+
+          {
+            name: "My Bookings",
+            href: "/dashboard/bookings",
+          },
+
+        ];
 
 
 
 
-  async function handleLogout() {
+
+  async function handleLogout(){
 
     await authClient.signOut();
 
@@ -73,7 +116,8 @@ export default function Navbar() {
 
 
 
-  if (isPending) {
+
+  if(isPending){
 
     return (
 
@@ -100,370 +144,412 @@ export default function Navbar() {
 
   return (
 
+<header className="sticky top-0 z-50 border-b bg-white/80 backdrop-blur">
 
-    <header className="sticky top-0 z-50 border-b bg-white/80 backdrop-blur">
 
+<div className="container mx-auto flex h-16 items-center justify-between px-4">
 
-      <div className="container mx-auto flex h-16 items-center justify-between px-4">
 
 
+{/* Logo */}
 
-        {/* Logo */}
+<Link
+href="/"
+className="flex items-center gap-2"
+onClick={()=>setOpen(false)}
+>
 
 
-        <Link
-          href="/"
-          onClick={()=>setOpen(false)}
-          className="flex items-center gap-2"
-        >
+<div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-lg font-bold text-white">
 
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-lg font-bold text-white">
+S
 
-            S
+</div>
 
-          </div>
 
+<div className="hidden sm:block">
 
-          <div className="hidden sm:block">
+<h1 className="text-lg font-bold">
+SewaHub Nepal
+</h1>
 
-            <h1 className="text-lg font-bold">
-              SewaHub Nepal
-            </h1>
+<p className="text-xs text-gray-500">
+Trusted Local Services
+</p>
 
-            <p className="text-xs text-gray-500">
-              Trusted Local Services
-            </p>
+</div>
 
-          </div>
 
+</Link>
 
-        </Link>
 
 
 
 
+{/* Desktop links */}
 
+<nav className="hidden items-center gap-8 md:flex">
 
 
-        {/* Desktop Navigation */}
+{navLinks.map((item)=>(
 
+<Link
+key={item.href}
+href={item.href}
+className="text-sm font-medium text-gray-700 transition hover:text-blue-600"
+>
 
-        <nav className="hidden items-center gap-8 md:flex">
+{item.name}
 
+</Link>
 
-          {navLinks?.map((item)=>(
+))}
 
 
-            <Link
+</nav>
 
-              key={item.name}
 
-              href={item.href}
 
-              className="text-sm font-medium text-gray-700 transition hover:text-blue-600"
 
-            >
 
-              {item.name}
+{/* Desktop account */}
 
-            </Link>
+<div className="hidden items-center gap-3 md:flex">
 
 
-          ))}
+{user ? (
 
+<>
 
-        </nav>
 
+<div className="relative group">
 
 
+<div className="flex cursor-pointer items-center gap-1 text-sm font-medium">
 
+Hi, {user.name}
 
+<ChevronDown size={16}/>
 
+</div>
 
-        {/* Desktop Actions */}
 
 
-        <div className="hidden items-center gap-3 md:flex">
 
+<div
+className="
+absolute 
+right-0
+top-full
+pt-3
+hidden
+group-hover:block
+z-50
+"
+>
 
-          {user ? (
 
-            <>
+<div className="w-52 rounded-xl border bg-white p-2 shadow-xl">
 
 
-              <span className="text-sm font-medium">
+{userLinks.map((item)=>(
 
-                Hi, {user.name}
 
-              </span>
+<Link
 
+key={item.href}
 
+href={item.href}
 
-              <Link href={dashboardLink}>
+className="
+block
+rounded-lg
+px-3
+py-2
+text-sm
+text-gray-700
+hover:bg-gray-100
+"
 
-                <Button className="cursor-pointer">
+>
 
-                  Dashboard
+{item.name}
 
-                </Button>
+</Link>
 
-              </Link>
 
+))}
 
 
+</div>
 
-              <Button
 
-                variant="destructive"
-className='cursor-pointer'
-                onClick={handleLogout}
+</div>
 
-              >
 
-                Logout
+</div>
 
-              </Button>
 
 
-            </>
 
 
-          ) : (
+<Button
 
+variant="destructive"
 
-            <>
+className="cursor-pointer"
 
+onClick={handleLogout}
 
-              <Link href="/login">
+>
 
-                <Button variant="outline" className='cursor-pointer'>
+Logout
 
-                  Login
+</Button>
 
-                </Button>
 
-              </Link>
+</>
 
 
+):(
 
-              <Link href="/register">
 
-                <Button className='cursor-pointer'>
+<>
 
-                  Get Started
+<Link href="/login">
 
-                </Button>
+<Button
+variant="outline"
+className="cursor-pointer"
+>
 
-              </Link>
+Login
 
+</Button>
 
-            </>
+</Link>
 
 
-          )}
 
+<Link href="/register">
 
+<Button
+className="cursor-pointer"
+>
 
-        </div>
+Get Started
 
+</Button>
 
+</Link>
 
 
+</>
 
 
+)}
 
-        {/* Mobile Menu Button */}
 
+</div>
 
-        <Button
 
-          variant="ghost"
 
-          size="icon"
 
-          className="md:hidden"
 
-          onClick={()=>setOpen(!open)}
 
-        >
 
+{/* Mobile button */}
 
-          {open ? (
 
-            <X className="h-6 w-6"/>
+<Button
 
-          ) : (
+variant="ghost"
 
-            <Menu className="h-6 w-6"/>
+size="icon"
 
-          )}
+className="md:hidden"
 
+onClick={()=>setOpen(!open)}
 
+>
 
-        </Button>
 
+{open ?
 
+<X/>
 
+:
 
-      </div>
+<Menu/>
 
+}
 
 
+</Button>
 
 
 
+</div>
 
 
-      {/* Mobile Menu */}
 
 
-      {open && (
 
 
-        <div className="border-t bg-white md:hidden">
 
 
-          <div className="container mx-auto flex flex-col gap-4 px-4 py-6">
+{/* Mobile menu */}
 
+{open && (
 
+<div className="border-t bg-white md:hidden">
 
-            {navLinks?.map((item)=>(
 
+<div className="container mx-auto flex flex-col gap-4 px-4 py-6">
 
-              <Link
 
-                key={item.name}
 
-                href={item.href}
+{navLinks.map((item)=>(
 
-                onClick={()=>setOpen(false)}
 
-                className="text-sm font-medium text-gray-700 hover:text-blue-600"
+<Link
 
-              >
+key={item.href}
 
-                {item.name}
+href={item.href}
 
-              </Link>
+onClick={()=>setOpen(false)}
 
+className="text-sm font-medium text-gray-700 hover:text-blue-600"
 
-            ))}
+>
 
+{item.name}
 
+</Link>
 
 
+))}
 
 
-            <div className="border-t pt-4">
 
 
-              {user ? (
+<div className="border-t pt-4">
 
-                <div className="flex flex-col gap-3">
 
+{user ? (
 
-                  <p className="text-sm font-medium">
+<div className="flex flex-col gap-3">
 
-                    Hi, {user.name}
 
-                  </p>
+<p className="text-sm font-medium">
 
+Hi, {user.name}
 
+</p>
 
-                  <Link href={dashboardLink}>
 
-                    <Button className="w-full cursor-pointer">
 
-                      Dashboard
 
-                    </Button>
+{userLinks.map((item)=>(
 
-                  </Link>
+<Link
 
+key={item.href}
 
+href={item.href}
 
-                  <Button
+>
 
-                    variant="destructive"
+<Button
 
-                    className="w-full cursor-pointer"
+variant="outline"
 
-                    onClick={handleLogout}
+className="w-full"
 
-                  >
+>
 
-                    Logout
+{item.name}
 
-                  </Button>
+</Button>
 
 
+</Link>
 
-                </div>
 
+))}
 
-              ) : (
 
 
-                <div className="flex flex-col gap-3">
 
+<Button
 
-                  <Link href="/login">
+variant="destructive"
 
-                    <Button
+className="w-full"
 
-                      variant="outline"
+onClick={handleLogout}
 
-                      className="w-full"
+>
 
-                    >
+Logout
 
-                      Login
+</Button>
 
-                    </Button>
 
-                  </Link>
+</div>
 
 
+):(
 
 
-                  <Link href="/register">
+<div className="flex flex-col gap-3">
 
 
-                    <Button
+<Link href="/login">
 
-                      className="w-full"
+<Button
+variant="outline"
+className="w-full"
+>
 
-                    >
+Login
 
-                      Get Started
+</Button>
 
-                    </Button>
+</Link>
 
 
-                  </Link>
+<Link href="/register">
 
+<Button className="w-full">
 
-                </div>
+Get Started
 
+</Button>
 
-              )}
+</Link>
 
 
-            </div>
+</div>
 
 
+)}
 
-          </div>
 
+</div>
 
-        </div>
 
+</div>
 
-      )}
 
+</div>
 
+)}
 
-    </header>
+
+
+</header>
 
 
   );
