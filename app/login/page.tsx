@@ -35,23 +35,36 @@ export default function LoginPage() {
       toast.error(error.message);
       return;
     }
-    toast.success("Logged in successfully!");
-    // Get the logged-in user
-    const session = await authClient.getSession();
+  toast.success("Logged in successfully!");
 
-    setLoading(false);
+const session = await authClient.getSession();
 
-    const role = (session.data?.user as { role?: string } | undefined)?.role;
+const role =
+  (session.data?.user as { role?: string } | undefined)?.role;
 
-    router.refresh();
 
-    if (role === "ADMIN") {
-      router.push("/admin/dashboard");
-    } else if (role === "PROVIDER") {
-      router.push("/provider");
-    } else {
-      router.push("/dashboard");
-    }
+setLoading(false);
+
+
+if (role === "ADMIN") {
+
+  router.push("/admin/dashboard");
+
+} else if (role === "PROVIDER") {
+
+  router.push("/provider");
+
+} else {
+
+  router.push("/");
+
+}
+
+
+// refresh after navigation
+setTimeout(() => {
+  router.refresh();
+}, 300);
   }
 
   return (

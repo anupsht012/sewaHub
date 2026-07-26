@@ -29,10 +29,10 @@ model User {
 
   reviews Review[]
 
-  serviceRequests ServiceRequest[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  serviceRequests      ServiceRequest[]
+  providerApplications ProviderApplication[]
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
 }
 
 model Provider {
@@ -172,6 +172,30 @@ model ProviderOffer {
   createdAt DateTime @default(now())
 }
 
+model ProviderApplication {
+  id String @id @default(cuid())
+
+  userId String
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  businessName String
+
+  category String
+
+  description String
+
+  location String
+
+  phone String
+
+  status ApplicationStatus @default(PENDING)
+
+  createdAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
+}
+
 model ContactMessage {
   id String @id @default(cuid())
 
@@ -254,8 +278,9 @@ model Verification {
 
 enum RequestStatus {
   OPEN
-
-  CLOSED
+  ACCEPTED
+  CANCELLED
+  COMPLETED
 }
 
 enum OfferStatus {
@@ -284,4 +309,12 @@ enum BookingStatus {
   CANCELLED
 
   COMPLETED
+}
+
+enum ApplicationStatus {
+  PENDING
+
+  APPROVED
+
+  REJECTED
 }

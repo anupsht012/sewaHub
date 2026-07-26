@@ -4,22 +4,24 @@ import { getCurrentUser } from "@/lib/auth/get-user";
 
 
 export async function POST(
-  req: Request
+  request: Request
 ) {
 
   try {
 
+
     const user = await getCurrentUser();
+
 
 
     if (!user) {
 
       return NextResponse.json(
         {
-          error: "Unauthorized"
+          error:"Unauthorized"
         },
         {
-          status: 401
+          status:401
         }
       );
 
@@ -27,23 +29,9 @@ export async function POST(
 
 
 
-    if (user.role !== "CUSTOMER") {
 
-      return NextResponse.json(
-        {
-          error:
-          "Only customers can create requests"
-        },
-        {
-          status: 403
-        }
-      );
+    const body = await request.json();
 
-    }
-
-
-
-    const body = await req.json();
 
 
     const {
@@ -53,26 +41,27 @@ export async function POST(
       location,
       phone,
       budget,
-      preferredDate,
+      preferredDate
     } = body;
 
 
 
-    if (
+
+
+    if(
       !category ||
       !title ||
       !description ||
       !location ||
       !phone
-    ) {
+    ){
 
       return NextResponse.json(
         {
-          error:
-          "Please fill all required fields"
+          error:"Please fill all required fields"
         },
         {
-          status: 400
+          status:400
         }
       );
 
@@ -80,74 +69,96 @@ export async function POST(
 
 
 
-    const request =
-      await prisma.serviceRequest.create({
-
-        data: {
-
-          customerId: user.id,
-
-          category,
-
-          title,
-
-          description,
-
-          location,
-
-          phone,
 
 
-          budget:
-            budget
-            ? Number(budget)
-            : null,
 
 
-          preferredDate:
-            preferredDate
-            ? new Date(preferredDate)
-            : null,
+    const serviceRequest =
+    await prisma.serviceRequest.create({
+
+      data:{
 
 
-        },
+        customerId:user.id,
 
-      });
+
+        category,
+
+
+        title,
+
+
+        description,
+
+
+        location,
+
+
+        phone,
+
+
+
+        budget:
+          budget
+          ? Number(budget)
+          : null,
+
+
+
+        preferredDate:
+          preferredDate
+          ? new Date(preferredDate)
+          : null,
+
+
+
+      }
+
+    });
+
+
+
 
 
 
     return NextResponse.json(
+
       {
         success:true,
-        request,
-      },
-      {
-        status:201
+        request:serviceRequest
       }
+
     );
 
 
 
-  } catch(error) {
+
+
+  } catch(error:any) {
 
 
     console.error(
-      "REQUEST SERVICE ERROR:",
+      "REQUEST CREATE ERROR:",
       error
     );
 
 
+
     return NextResponse.json(
+
       {
-        error:
-        "Internal server error"
+        error:error.message ||
+        "Something went wrong"
       },
+
       {
         status:500
       }
+
     );
 
 
   }
+
 
 }

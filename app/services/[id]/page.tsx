@@ -1,8 +1,9 @@
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import BookServiceModal from "@/components/BookServiceModal";
-
+import BookServiceModal from "@/components/shared/BookServiceModal";
+import { getCurrentUser } from "@/lib/auth/get-user";
 import Link from "next/link";
+import LoginToBookButton from "@/components/shared/LogintoBookBtn";
 
 
 interface PageProps {
@@ -19,8 +20,7 @@ export default async function ServiceDetailsPage({
 
 
   const { id } = await params;
-
-
+  const user = await getCurrentUser();
 
   const service = await prisma.service.findUnique({
 
@@ -83,12 +83,12 @@ export default async function ServiceDetailsPage({
   const averageRating =
     service.reviews.length > 0
       ? (
-          service.reviews.reduce(
-            (sum, review) =>
-              sum + review.rating,
-            0
-          ) / service.reviews.length
-        ).toFixed(1)
+        service.reviews.reduce(
+          (sum, review) =>
+            sum + review.rating,
+          0
+        ) / service.reviews.length
+      ).toFixed(1)
       : null;
 
 
@@ -203,7 +203,7 @@ export default async function ServiceDetailsPage({
                 <div className="mt-5 space-y-4">
 
 
-                  {service?.reviews?.map((review:any)=>(
+                  {service?.reviews?.map((review: any) => (
 
 
                     <div
@@ -361,11 +361,14 @@ export default async function ServiceDetailsPage({
 
             <div className="mt-8">
 
-
-              <BookServiceModal
+              {user ? <BookServiceModal
                 serviceId={service.id}
                 serviceName={service.name}
               />
+                :
+                <LoginToBookButton />
+              }
+
 
 
             </div>
@@ -412,7 +415,7 @@ export default async function ServiceDetailsPage({
 
 
 
-              {relatedServices?.map((item:any)=>(
+              {relatedServices?.map((item: any) => (
 
 
 

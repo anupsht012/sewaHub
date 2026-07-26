@@ -3,18 +3,10 @@
 import Link from "next/link";
 import { Menu, X, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-
-
-const navLinks = [
-  { name: "Home", href: "/" },
-  { name: "Services", href: "/services" },
-  { name: "Become a Provider", href: "/provider" },
-  { name: "About", href: "/about" },
-  { name: "Contact", href: "/contact" },
-];
+import { authClient } from "@/lib/auth-client";
+import { toast } from "sonner";
 
 
 interface NavUser {
@@ -27,55 +19,80 @@ interface NavUser {
 }
 
 
-export default function Navbar() {
-
+export default function Navbar({
+  user,
+}: {
+  user?: NavUser | null;
+}) {
 
   const router = useRouter();
 
   const [open, setOpen] = useState(false);
+const [loggingOut, setLoggingOut] = useState(false);
 
 
+  const navLinks = [
+    {
+      name: "Home",
+      href: "/",
+    },
 
-  const {
-    data: session,
-    isPending,
-    refetch,
-  } = authClient.useSession();
+    {
+      name: "Services",
+      href: "/services",
+    },
 
+    {
+      name: "About",
+      href: "/about",
+    },
 
+    {
+      name: "Contact",
+      href: "/contact",
+    },
+  ];
 
-  const user =
-    session?.user as NavUser | undefined;
 
 
 
   const userLinks =
+
     user?.role === "PROVIDER"
+
       ? [
-          {
-            name: "Provider Dashboard",
-            href: "/provider/dashboard",
-          },
-          {
-            name: "My Services",
-            href: "/provider/services",
-          },
-          {
-            name: "My Offers",
-            href: "/provider/offers",
-          },
-        ]
+
+        {
+          name: "Provider Dashboard",
+          href: "/provider/dashboard",
+        },
+
+        {
+          name: "My Services",
+          href: "/provider/services",
+        },
+
+        {
+          name: "My Offers",
+          href: "/provider/offers",
+        },
+
+      ]
+
 
       : user?.role === "ADMIN"
 
-      ? [
+        ? [
+
           {
             name: "Admin Panel",
             href: "/admin/dashboard",
           },
+
         ]
 
-      : [
+
+        : [
 
           {
             name: "Dashboard",
@@ -98,44 +115,26 @@ export default function Navbar() {
 
 
 
-  async function handleLogout(){
 
+
+  async function handleLogout() {
+  try {
+  setLoggingOut(true);
     await authClient.signOut();
-
-    await refetch();
-
-    router.refresh();
-
-    router.push("/login");
 
     setOpen(false);
 
-  }
+    window.location.href = "/login";
+toast.success("Logged out successfully!");
 
-
-
-
-
-
-  if(isPending){
-
-    return (
-
-      <header className="sticky top-0 z-50 border-b bg-white/80 backdrop-blur">
-
-        <div className="container mx-auto flex h-16 items-center px-4">
-
-          <span className="font-bold">
-            SewaHub Nepal
-          </span>
-
-        </div>
-
-      </header>
-
-    );
+  } catch (error) {
+ setLoggingOut(false);
+    console.error("Logout failed:", error);
 
   }
+}
+
+
 
 
 
@@ -144,124 +143,224 @@ export default function Navbar() {
 
   return (
 
-<header className="sticky top-0 z-50 border-b bg-white/80 backdrop-blur">
+    <header
+      className="
+sticky
+top-0
+z-50
+border-b
+bg-white/80
+backdrop-blur
+"
+    >
 
 
-<div className="container mx-auto flex h-16 items-center justify-between px-4">
-
-
-
-{/* Logo */}
-
-<Link
-href="/"
-className="flex items-center gap-2"
-onClick={()=>setOpen(false)}
->
-
-
-<div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-lg font-bold text-white">
-
-S
-
-</div>
-
-
-<div className="hidden sm:block">
-
-<h1 className="text-lg font-bold">
-SewaHub Nepal
-</h1>
-
-<p className="text-xs text-gray-500">
-Trusted Local Services
-</p>
-
-</div>
-
-
-</Link>
+      <div
+        className="
+container
+mx-auto
+flex
+h-16
+items-center
+justify-between
+px-4
+"
+      >
 
 
 
+        {/* LOGO */}
+
+        <Link
+          href="/"
+          onClick={() => setOpen(false)}
+          className="flex items-center gap-2"
+        >
 
 
-{/* Desktop links */}
+          <div
+            className="
+flex
+h-10
+w-10
+items-center
+justify-center
+rounded-xl
+bg-blue-600
+text-lg
+font-bold
+text-white
+"
+          >
 
-<nav className="hidden items-center gap-8 md:flex">
+            S
 
-
-{navLinks.map((item)=>(
-
-<Link
-key={item.href}
-href={item.href}
-className="text-sm font-medium text-gray-700 transition hover:text-blue-600"
->
-
-{item.name}
-
-</Link>
-
-))}
-
-
-</nav>
+          </div>
 
 
+          <div className="hidden sm:block">
+
+            <h1 className="text-lg font-bold">
+              SewaHub Nepal
+            </h1>
 
 
-
-{/* Desktop account */}
-
-<div className="hidden items-center gap-3 md:flex">
-
-
-{user ? (
-
-<>
+            <p className="text-xs text-gray-500">
+              Trusted Local Services
+            </p>
 
 
-<div className="relative group">
+          </div>
 
 
-<div className="flex cursor-pointer items-center gap-1 text-sm font-medium">
-
-Hi, {user.name}
-
-<ChevronDown size={16}/>
-
-</div>
+        </Link>
 
 
 
 
-<div
-className="
-absolute 
+
+
+
+
+
+        {/* DESKTOP NAV */}
+
+        <nav
+          className="
+hidden
+items-center
+gap-8
+md:flex
+"
+        >
+
+
+          {navLinks.map((item) => (
+
+            <Link
+              key={item.href}
+              href={item.href}
+              className="
+text-sm
+font-medium
+text-gray-700
+hover:text-blue-600
+"
+            >
+
+              {item.name}
+
+            </Link>
+
+          ))}
+
+
+
+          {(!user || user.role === "CUSTOMER") && (
+
+            <Link
+              href={user ? "/provider/apply" : "/login"}
+              className="
+text-sm
+font-medium
+text-blue-600
+"
+            >
+
+              Become a Provider
+
+            </Link>
+
+          )}
+
+
+
+        </nav>
+
+
+
+
+
+
+
+
+
+        {/* DESKTOP ACCOUNT */}
+
+        <div
+          className="
+hidden
+items-center
+gap-3
+md:flex
+"
+        >
+
+
+          {user ? (
+
+            <>
+
+
+              <div
+                className="
+relative
+group
+"
+              >
+
+
+                <div
+                  className="
+flex
+cursor-pointer
+items-center
+gap-1
+text-sm
+font-medium
+"
+                >
+
+                  Hi, {user.name}
+
+                  <ChevronDown size={16} />
+
+                </div>
+
+
+
+
+
+                <div
+                  className="
+absolute
 right-0
 top-full
-pt-3
 hidden
+pt-3
 group-hover:block
-z-50
 "
->
+                >
 
 
-<div className="w-52 rounded-xl border bg-white p-2 shadow-xl">
+                  <div
+                    className="
+w-52
+rounded-xl
+border
+bg-white
+p-2
+shadow-xl
+"
+                  >
 
 
-{userLinks.map((item)=>(
+                    {userLinks.map((item) => (
 
-
-<Link
-
-key={item.href}
-
-href={item.href}
-
-className="
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        className="
 block
 rounded-lg
 px-3
@@ -270,287 +369,318 @@ text-sm
 text-gray-700
 hover:bg-gray-100
 "
+                      >
 
->
+                        {item.name}
 
-{item.name}
+                      </Link>
 
-</Link>
+                    ))}
 
 
-))}
+                  </div>
 
 
-</div>
+                </div>
 
 
-</div>
+              </div>
 
 
-</div>
 
 
 
+              <Button
+                variant="destructive"
+                onClick={handleLogout}
+                    disabled={loggingOut}
+                className="cursor-pointer"
+              >
 
+                Logout
 
-<Button
+              </Button>
 
-variant="destructive"
 
-className="cursor-pointer"
+            </>
 
-onClick={handleLogout}
 
->
+          )
 
-Logout
+            : (
 
-</Button>
+              <>
 
+                <Link href="/login">
 
-</>
+                  <Button
+                    variant="outline"
+                    className="cursor-pointer"
+                  >
 
+                    Login
 
-):(
+                  </Button>
 
+                </Link>
 
-<>
 
-<Link href="/login">
+                <Link href="/register">
 
-<Button
-variant="outline"
-className="cursor-pointer"
->
+                  <Button className="cursor-pointer">
 
-Login
+                    Get Started
 
-</Button>
+                  </Button>
 
-</Link>
+                </Link>
 
 
+              </>
 
-<Link href="/register">
+            )}
 
-<Button
-className="cursor-pointer"
->
 
-Get Started
 
-</Button>
+        </div>
 
-</Link>
 
 
-</>
 
 
-)}
 
 
-</div>
 
+        {/* MOBILE BUTTON */}
 
+        <Button
+          variant="ghost"
+          size="icon"
+          className="md:hidden"
+          onClick={() => setOpen(!open)}
+        >
 
+          {
+            open
+              ?
+              <X />
+              :
+              <Menu />
+          }
 
+        </Button>
 
 
 
-{/* Mobile button */}
+      </div>
 
 
-<Button
 
-variant="ghost"
 
-size="icon"
 
-className="md:hidden"
 
-onClick={()=>setOpen(!open)}
 
->
 
 
-{open ?
 
-<X/>
+      {/* MOBILE MENU */}
 
-:
+      {
 
-<Menu/>
+        open && (
 
-}
+          <div
+            className="
+border-t
+bg-white
+md:hidden
+"
+          >
 
 
-</Button>
+            <div
+              className="
+container
+mx-auto
+flex
+flex-col
+gap-4
+px-4
+py-6
+"
+            >
 
 
+              {navLinks.map((item) => (
 
-</div>
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setOpen(false)}
+                  className="
+text-sm
+font-medium
+"
+                >
 
+                  {item.name}
 
+                </Link>
 
+              ))}
 
 
 
 
+              {(!user || user.role === "CUSTOMER") && (
 
-{/* Mobile menu */}
+                <Link
+                  href="/provider/apply"
+                  onClick={() => setOpen(false)}
+                >
 
-{open && (
+                  <Button
+                    variant="outline"
+                    className="w-full"
+                  >
 
-<div className="border-t bg-white md:hidden">
+                    Become a Provider
 
+                  </Button>
 
-<div className="container mx-auto flex flex-col gap-4 px-4 py-6">
+                </Link>
 
+              )}
 
 
-{navLinks.map((item)=>(
 
 
-<Link
+              <div
+                className="
+border-t
+pt-4
+"
+              >
 
-key={item.href}
 
-href={item.href}
+                {user ? (
 
-onClick={()=>setOpen(false)}
+                  <div
+                    className="
+flex
+flex-col
+gap-3
+"
+                  >
 
-className="text-sm font-medium text-gray-700 hover:text-blue-600"
 
->
+                    <p className="font-medium">
 
-{item.name}
+                      Hi, {user.name}
 
-</Link>
+                    </p>
 
 
-))}
 
+                    {userLinks.map((item) => (
 
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        onClick={() => setOpen(false)}
+                      >
 
+                        <Button
+                          variant="outline"
+                          className="w-full"
+                        >
 
-<div className="border-t pt-4">
+                          {item.name}
 
+                        </Button>
 
-{user ? (
+                      </Link>
 
-<div className="flex flex-col gap-3">
+                    ))}
 
 
-<p className="text-sm font-medium">
 
-Hi, {user.name}
+                    <Button
+                      variant="destructive"
+                      className="w-full"
+                      onClick={handleLogout}
+                    >
 
-</p>
+                      Logout
 
+                    </Button>
 
 
+                  </div>
 
-{userLinks.map((item)=>(
 
-<Link
+                )
 
-key={item.href}
+                  : (
 
-href={item.href}
+                    <div
+                      className="
+flex
+flex-col
+gap-3
+"
+                    >
 
->
 
-<Button
+                      <Link href="/login">
 
-variant="outline"
+                        <Button
+                          variant="outline"
+                          className="w-full"
+                        >
 
-className="w-full"
+                          Login
 
->
+                        </Button>
 
-{item.name}
+                      </Link>
 
-</Button>
 
 
-</Link>
+                      <Link href="/register">
 
+                        <Button
+                          className="w-full"
+                        >
 
-))}
+                          Get Started
 
+                        </Button>
 
+                      </Link>
 
 
-<Button
+                    </div>
 
-variant="destructive"
+                  )}
 
-className="w-full"
 
-onClick={handleLogout}
 
->
+              </div>
 
-Logout
 
-</Button>
+            </div>
 
 
-</div>
+          </div>
 
+        )
 
-):(
+      }
 
 
-<div className="flex flex-col gap-3">
 
-
-<Link href="/login">
-
-<Button
-variant="outline"
-className="w-full"
->
-
-Login
-
-</Button>
-
-</Link>
-
-
-<Link href="/register">
-
-<Button className="w-full">
-
-Get Started
-
-</Button>
-
-</Link>
-
-
-</div>
-
-
-)}
-
-
-</div>
-
-
-</div>
-
-
-</div>
-
-)}
-
-
-
-</header>
-
+    </header>
 
   );
 

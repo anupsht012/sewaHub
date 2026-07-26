@@ -2,8 +2,8 @@ import { prisma } from "@/lib/prisma";
 import { notFound, redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth/get-user";
 import Link from "next/link";
-import CancelBookingButton from "@/components/CancelBookingButton";
-import ReviewModal from "@/components/ReviewModal";
+import CancelBookingButton from "@/components/shared/CancelBookingButton";
+import ReviewModal from "@/components/shared/ReviewModal";
 
 
 interface PageProps {

@@ -7,8 +7,8 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   Card,
   CardContent,
-} from "@/components/ui/card";
-import { toast } from "sonner";
+} from "@/components/ui/card";  
+import { toast } from "sonner"; 
 
 
 export default function RequestServiceForm() {
@@ -52,84 +52,104 @@ export default function RequestServiceForm() {
 
 
 
-  async function handleSubmit(
-    e:React.FormEvent
-  ){
+async function handleSubmit(
+  
+  e: React.FormEvent
+) {
 
-    e.preventDefault();
+  e.preventDefault();
 
+  setLoading(true);
 
-    setLoading(true);
+  try {
 
+    const res = await fetch(
+      "/api/request-service",
+      {
+        method: "POST",
 
-    try{
+        headers: {
+          "Content-Type": "application/json",
+        },
 
+        body: JSON.stringify({
 
-      const res = await fetch(
-        "/api/request-service",
-        {
+          ...form,
 
-          method:"POST",
+          budget:
+            form.budget
+              ? Number(form.budget)
+              : null,
 
-          headers:{
-            "Content-Type":
-            "application/json",
-          },
+          preferredDate:
+            form.preferredDate
+              ? new Date(form.preferredDate)
+              : null,
 
-
-          body:
-          JSON.stringify(form),
-
-        }
-      );
-
-
-      const data =
-      await res.json();
-
-
-
-      if(!res.ok){
-
-        throw new Error(
-          data.error
-        );
+        }),
 
       }
+    );
 
 
-      toast.success(
-        "Service request submitted"
+    const data = await res.json();
+
+
+
+    console.log("API RESPONSE:", data);
+
+
+
+    if(!res.ok){
+
+      throw new Error(
+        data.error || "Request failed"
       );
-
-
-      setForm({
-
-        category:"",
-        title:"",
-        description:"",
-        location:"",
-        phone:"",
-        budget:"",
-        preferredDate:"",
-
-      });
-
-
-
-    }catch(error){
-
-      toast.error(
-        "Something went wrong"
-      );
-
-    }finally{
-
-      setLoading(false);
 
     }
 
+
+
+    toast.success(
+      "Service request submitted"
+    );
+
+
+
+    setForm({
+
+      category:"",
+      title:"",
+      description:"",
+      location:"",
+      phone:"",
+      budget:"",
+      preferredDate:"",
+
+    });
+
+
+
+  } catch(error:any) {
+
+
+    console.error(error);
+
+
+    toast.error(
+      error.message
+    );
+
+
+  } finally {
+
+
+    setLoading(false);
+
+
   }
+
+}
 
 
 
@@ -248,6 +268,7 @@ export default function RequestServiceForm() {
 
           <Button
             disabled={loading}
+            type="submit"
             className="w-full bg-blue-600 hover:bg-blue-700"
           >
 

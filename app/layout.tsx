@@ -2,6 +2,7 @@ import LayoutWrapper from "@/components/layout/LayoutWrapper";
 import { Toaster } from "@/components/ui/sonner";
 import { Poppins } from "next/font/google";
 import type { Metadata } from "next";
+import { getCurrentUser } from "@/lib/auth/get-user";
 import "./globals.css";
 
 const poppins = Poppins({
@@ -14,20 +15,35 @@ export const metadata: Metadata = {
   description: "Trusted Local Services",
 };
 
-export default function RootLayout({
+
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+
+
+  const user = await getCurrentUser();
+
+
   return (
+
     <html lang="en">
+
       <body className={poppins.className}>
-        <LayoutWrapper>
+
+        <LayoutWrapper user={user}>
           {children}
         </LayoutWrapper>
 
+
         <Toaster />
+
+
       </body>
+
     </html>
+
   );
+
 }

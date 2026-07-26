@@ -9,7 +9,7 @@ import {
   Calendar,
 } from "lucide-react";
 
-import LogoutButton from "@/components/LogoutButton";
+import LogoutButton from "@/components/shared/LogoutButton";
 
 
 const links = [

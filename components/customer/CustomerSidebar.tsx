@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
+  PlusCircle,
   Search,
   ClipboardList,
   CalendarDays,
@@ -11,13 +12,19 @@ import {
   User,
 } from "lucide-react";
 
-import LogoutButton from "@/components/LogoutButton";
+import LogoutButton from "@/components/shared/LogoutButton";
 
 const links = [
   {
     name: "Dashboard",
     href: "/dashboard",
     icon: LayoutDashboard,
+  },
+  {
+    name: "Request Service",
+    href: "dashboard/request-service",
+    icon: PlusCircle,
+    primary: true,
   },
   {
     name: "Find Services",
@@ -92,15 +99,27 @@ export default function CustomerSidebar() {
             <Link
               key={link.href}
               href={link.href}
-              className={`flex items-center gap-3 rounded-xl px-4 py-3 transition ${
-                active
-                  ? "bg-blue-600 text-white"
-                  : "hover:bg-slate-800"
-              }`}
+              className={`
+                flex
+                items-center
+                gap-3
+                rounded-xl
+                px-4
+                py-3
+                transition
+
+                ${
+                  active
+                    ? "bg-blue-600 text-white"
+                    : link.primary
+                    ? "bg-blue-500 hover:bg-blue-600 text-white"
+                    : "hover:bg-slate-800"
+                }
+              `}
             >
               <Icon size={20} />
 
-              {link.name}
+              <span>{link.name}</span>
             </Link>
           );
         })}

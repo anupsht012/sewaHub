@@ -1,11 +1,11 @@
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth/get-user";
-import EditProviderModal from "@/components/EditProviderModal";
-import AddServiceModal from "@/components/AddServiceModal";
-import EditServiceModal from "@/components/EditServiceModal";
-import DeleteServiceModal from "@/components/DeleteServiceModal";
-import ProviderBookings from "@/components/ProviderBookings";
+import EditProviderModal from "@/components/provider/EditProviderModal";
+import AddServiceModal from "@/components/shared/AddServiceModal";
+import EditServiceModal from "@/components/shared/EditServiceModal";
+import DeleteServiceModal from "@/components/shared/DeleteServiceModal";
+import ProviderBookings from "@/components/provider/ProviderBookings";
 
 
 export default async function ProviderDashboardPage() {

@@ -6,6 +6,21 @@ import {
 } from "lucide-react";
 
 
+interface Props {
+  user: {
+    id: string; 
+    name: string;
+    email: string;
+  }
+  | null;
+}
+
+
+export default function HowItWorks({
+  user,
+}: Props) {
+
+
 const steps = [
   {
     title: "Find a Service",
@@ -21,8 +36,10 @@ const steps = [
     description:
       "Choose your preferred provider and schedule a convenient time.",
     icon: CalendarCheck,
-    link: "/services",
-    button: "Book Now",
+      link: user
+    ? "/services"
+    : "/login",
+      button: "Book Now",  
   },
 
   {
@@ -30,15 +47,10 @@ const steps = [
     description:
       "Your verified professional completes the work. Rate your experience.",
     icon: Handshake,
-    link: "/dashboard#reviews",
+    link: "/dashboard/reviews",
     button: "Leave Review",
   },
 ];
-
-
-
-export default function HowItWorks() {
-
 
   return (
 

@@ -2,17 +2,28 @@ import Hero from "@/components/home/Hero";
 import Categories from "@/components/home/Categories";
 import FeaturedProviders from "@/components/home/FeaturedProviders";
 import Testimonials from "@/components/home/Testimonials";
-import CTA from "@/components/home/CTA";  
+import CTA from "@/components/home/CTA";
 import HowItWorks from "@/components/home/HowItWorks";
+import { getCurrentUser } from "@/lib/auth/get-user";
+
 export const dynamic = "force-dynamic";
-export default function HomePage() {
+
+export default async function HomePage() {
+
+  const user = await getCurrentUser();
+
   return (
     <div className="overflow-hidden">
       <Hero />
+
       <Categories />
+
       <FeaturedProviders />
-      <HowItWorks/>
+
+      <HowItWorks user={user} />
+
       <Testimonials />
+
       <CTA />
     </div>
   );
