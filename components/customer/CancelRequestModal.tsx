@@ -149,7 +149,7 @@ export default function CancelRequestModal({
   "
             >
                 Cancel
-            </DialogTrigger>
+            </DialogTrigger> 
 
 
 
