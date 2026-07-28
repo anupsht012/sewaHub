@@ -6,6 +6,14 @@ import { getCurrentUser } from "@/lib/auth/get-user";
 
 import { Button } from "@/components/ui/button";
 import DeleteServiceButton from "@/components/admin/DeleteServiceButton";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 export default async function AdminServicesPage() {
   const user = await getCurrentUser();
@@ -34,99 +42,72 @@ export default async function AdminServicesPage() {
 
   return (
     <div className="mx-auto max-w-7xl">
-
       <div className="mb-8">
-
-        <h1 className="text-3xl font-bold">
-          Manage Services
-        </h1>
-
+        <h1 className="text-3xl font-bold">Manage Services</h1>
         <p className="mt-2 text-gray-500">
           Review, inspect and remove services.
         </p>
-
       </div>
 
       {services.length === 0 ? (
-
         <div className="rounded-2xl bg-white p-8 shadow">
           No services found.
         </div>
-
       ) : (
+        <div className="overflow-hidden rounded-2xl border bg-white shadow-sm">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Service</TableHead>
+                <TableHead>Provider</TableHead>
+                <TableHead>Category</TableHead>
+                <TableHead>Price</TableHead>
+                <TableHead>Rating</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {services?.map((service) => {
+                const averageRating =
+                  service.reviews.length === 0
+                    ? 0
+                    : (
+                        service.reviews.reduce(
+                          (sum, review) => sum + review.rating,
+                          0
+                        ) / service.reviews.length
+                      ).toFixed(1);
 
-        <div className="space-y-5">
-
-          {services?.map((service) => {
-
-            const averageRating =
-              service.reviews.length === 0
-                ? 0
-                : (
-                    service.reviews.reduce(
-                      (sum, review) => sum + review.rating,
-                      0
-                    ) / service.reviews.length
-                  ).toFixed(1);
-
-            return (
-
-              <div
-                key={service.id}
-                className="rounded-2xl bg-white p-6 shadow"
-              >
-
-                <div className="flex items-center justify-between">
-
-                  <div className="space-y-2">
-
-                    <h2 className="text-xl font-bold">
+                return (
+                  <TableRow key={service.id}>
+                    <TableCell className="font-bold">
                       {service.name}
-                    </h2>
-
-                    <p className="text-gray-500">
+                    </TableCell>
+                    <TableCell className="text-gray-600">
                       {service.provider.user.name}
-                    </p>
-
-                    <p>
-                      Category: {service.category}
-                    </p>
-
-                    <p>
-                      Price: Rs. {service.price}
-                    </p>
-
-                    <p>
-                      ⭐ {averageRating}
-                    </p>
-
-                  </div>
-
-                  <div className="flex gap-3">
-
-                    <Link href={`/admin/services/${service.id}`}>
-                      <Button>
-                        View
-                      </Button>
-                    </Link>
-
-                    <DeleteServiceButton
-                      serviceId={service.id}
-                    />
-
-                  </div>
-
-                </div>
-
-              </div>
-
-            );
-          })}
-
+                    </TableCell>
+                    <TableCell className="text-gray-600">
+                      {service.category}
+                    </TableCell>
+                    <TableCell className="font-medium">
+                      Rs. {service.price}
+                    </TableCell>
+                    <TableCell>⭐ {averageRating}</TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex items-center justify-end gap-3">
+                        <Link href={`/admin/services/${service.id}`}>
+                          <Button>View</Button>
+                        </Link>
+                        <DeleteServiceButton serviceId={service.id} />
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
         </div>
-
       )}
-
     </div>
   );
 }
