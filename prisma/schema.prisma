@@ -61,7 +61,7 @@ model Service {
 
   name String
 
-  category String
+  category String?
 
   description String?
 
