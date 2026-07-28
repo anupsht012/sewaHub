@@ -1,128 +1,89 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth/get-user";
 
 export async function PUT(
-  request: Request,
+  request: NextRequest,
   {
     params,
   }: {
-    params:{
-      id:string
-    }
+    params: Promise<{ id: string }>;
   }
-){
-
+) {
   try {
-
-
     const user = await getCurrentUser();
 
-
-    if(!user){
-
+    if (!user) {
       return NextResponse.json(
         {
-          error:"Unauthorized"
+          error: "Unauthorized",
         },
         {
-          status:401
+          status: 401,
         }
       );
-
     }
 
-
-    const {id}=params;
-
+    const { id } = await params;
 
     const body = await request.json();
 
-
-    const existing =
-    await prisma.serviceRequest.findUnique({
-
-      where:{
-        id
-      }
-
+    const existing = await prisma.serviceRequest.findUnique({
+      where: {
+        id,
+      },
     });
 
-
-    if(!existing){
-
+    if (!existing) {
       return NextResponse.json(
         {
-          error:"Request not found"
+          error: "Request not found",
         },
         {
-          status:404
+          status: 404,
         }
       );
-
     }
 
-
-    if(existing.customerId !== user.id){
-
+    if (existing.customerId !== user.id) {
       return NextResponse.json(
         {
-          error:"Forbidden"
+          error: "Forbidden",
         },
         {
-          status:403
+          status: 403,
         }
       );
-
     }
 
-
-    const updated =
-    await prisma.serviceRequest.update({
-
-      where:{
-        id
+    const updated = await prisma.serviceRequest.update({
+      where: {
+        id,
       },
-
-      data:{
-        category:body.category,
-        title:body.title,
-        description:body.description,
-        location:body.location,
-        phone:body.phone,
-
-        budget:
-          body.budget
-          ? Number(body.budget)
-          : null,
-
-        preferredDate:
-          body.preferredDate
+      data: {
+        category: body.category,
+        title: body.title,
+        description: body.description,
+        location: body.location,
+        phone: body.phone,
+        budget: body.budget ? Number(body.budget) : null,
+        preferredDate: body.preferredDate
           ? new Date(body.preferredDate)
           : null,
-      }
-
+      },
     });
 
-
     return NextResponse.json(updated);
-
-
-
-  } catch(error:any){
-
+  } catch (error: any) {
     console.error(error);
-
 
     return NextResponse.json(
       {
-        error:error.message
+        error: error.message,
       },
       {
-        status:500
+        status: 500,
       }
     );
-
   }
-
 }
