@@ -1,11 +1,19 @@
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth/get-user";
+
 import EditProviderModal from "@/components/provider/EditProviderModal";
-import AddServiceModal from "@/components/shared/AddServiceModal";
+import AddServiceModal from "@/components/provider/AddServiceModal";
 import EditServiceModal from "@/components/shared/EditServiceModal";
 import DeleteServiceModal from "@/components/shared/DeleteServiceModal";
 import ProviderBookings from "@/components/provider/ProviderBookings";
+
+import {
+  Briefcase,
+  Star,
+  CalendarCheck,
+  MapPin,
+} from "lucide-react";
 
 
 export default async function ProviderDashboardPage() {
@@ -28,29 +36,26 @@ export default async function ProviderDashboardPage() {
 
 
 
-
-
   const provider = await prisma.provider.findUnique({
 
-    where: {
-      userId: user.id,
+    where:{
+      userId:user.id,
     },
 
 
-    include: {
+    include:{
 
-      services: {
+      services:{
 
-        include: {
+        include:{
 
-          reviews: {
-
-            include: {
-              customer: true,
+          reviews:{
+            include:{
+              customer:true,
             },
 
-            orderBy: {
-              createdAt: "desc",
+            orderBy:{
+              createdAt:"desc",
             },
 
           },
@@ -67,9 +72,29 @@ export default async function ProviderDashboardPage() {
 
 
 
-  if (!provider) {
+  if(!provider){
+
     redirect("/provider/setup");
+
   }
+
+
+
+
+
+
+  const totalReviews =
+    provider.services.reduce(
+      (total,service)=>
+        total + service.reviews.length,
+      0
+    );
+
+
+
+
+  const totalServices =
+    provider.services.length;
 
 
 
@@ -78,88 +103,261 @@ export default async function ProviderDashboardPage() {
 
   return (
 
-    <div className="min-h-screen bg-gray-50 p-10">
+    <div className="min-h-screen bg-gray-50 p-6 lg:p-10">
 
 
-      <div className="mx-auto max-w-5xl space-y-6">
-
-
-
+      <div className="mx-auto max-w-6xl space-y-8">
 
 
 
-        {/* Profile Card */}
+
+
+
+        {/* Header */}
+
+
+        <div>
+
+
+          <h1 className="text-3xl font-bold">
+
+            Welcome back, {user.name} 👋
+
+          </h1>
+
+
+          <p className="mt-2 text-gray-500">
+
+            Manage your services and customer requests.
+
+          </p>
+
+
+        </div>
+
+
+
+
+
+
+
+
+
+        {/* Stats */}
+
+
+        <div className="grid gap-5 md:grid-cols-3">
+
+
+
+          <div className="rounded-3xl bg-white p-6 shadow">
+
+
+            <div className="flex items-center gap-4">
+
+
+              <div className="rounded-xl bg-blue-100 p-3 text-blue-600">
+
+                <Briefcase/>
+
+              </div>
+
+
+              <div>
+
+                <p className="text-sm text-gray-500">
+                  Services
+                </p>
+
+
+                <h2 className="text-3xl font-bold">
+                  {totalServices}
+                </h2>
+
+              </div>
+
+
+            </div>
+
+
+          </div>
+
+
+
+
+
+          <div className="rounded-3xl bg-white p-6 shadow">
+
+
+            <div className="flex items-center gap-4">
+
+
+              <div className="rounded-xl bg-yellow-100 p-3 text-yellow-600">
+
+                <Star/>
+
+              </div>
+
+
+              <div>
+
+                <p className="text-sm text-gray-500">
+                  Reviews
+                </p>
+
+
+                <h2 className="text-3xl font-bold">
+                  {totalReviews}
+                </h2>
+
+              </div>
+
+
+            </div>
+
+
+          </div>
+
+
+
+
+
+
+          <div className="rounded-3xl bg-white p-6 shadow">
+
+
+            <div className="flex items-center gap-4">
+
+
+              <div className="rounded-xl bg-green-100 p-3 text-green-600">
+
+                <CalendarCheck/>
+
+              </div>
+
+
+              <div>
+
+                <p className="text-sm text-gray-500">
+                  Status
+                </p>
+
+
+                <h2 className="text-lg font-bold">
+
+                  {provider.verified
+                    ? "Verified"
+                    : "Pending"}
+
+                </h2>
+
+
+              </div>
+
+
+            </div>
+
+
+          </div>
+
+
+
+
+        </div>
+
+
+
+
+
+
+
+
+
+        {/* Provider Profile */}
+
 
 
         <div className="rounded-3xl bg-white p-8 shadow">
 
 
-
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col justify-between gap-5 md:flex-row">
 
 
             <div>
 
 
-              <h1 className="text-3xl font-bold">
-                Welcome, {user.name} 👋
-              </h1>
+              <h2 className="text-2xl font-bold">
+
+                Provider Profile
+
+              </h2>
 
 
 
               <p className="mt-2 text-gray-500">
-                {provider.bio}
+
+                {provider.bio || "No bio added"}
+
               </p>
 
 
-            </div>
+
+              <div className="mt-4 flex items-center gap-2 text-gray-600">
 
 
+                <MapPin size={18}/>
+
+                {provider.location}
 
 
-
-            <div>
-
-
-              {provider?.verified ? (
-
-                <span className="rounded-full bg-green-100 px-4 py-2 text-green-700">
-                  Verified
-                </span>
-
-
-              ) : (
-
-
-                <span className="rounded-full bg-yellow-100 px-4 py-2 text-yellow-700">
-                  Pending Verification
-                </span>
-
-
-              )}
+              </div>
 
 
             </div>
 
 
+
+
+
+            <div className="flex items-center gap-4">
+
+
+              {
+                provider.verified ? (
+
+                  <span className="rounded-full bg-green-100 px-4 py-2 text-green-700">
+
+                    ✅ Verified Provider
+
+                  </span>
+
+
+                ):(
+
+
+                  <span className="rounded-full bg-yellow-100 px-4 py-2 text-yellow-700">
+
+                    Pending Verification
+
+                  </span>
+
+
+                )
+              }
+
+
+
+
+
+              <EditProviderModal provider={provider}/>
+
+
+            </div>
+
+
+
           </div>
 
-
-
-
-
-          <div className="mt-6">
-
-
-            <p>
-              📍 {provider.location}
-            </p>
-
-
-            <EditProviderModal provider={provider} />
-
-
-          </div>
 
 
         </div>
@@ -179,15 +377,19 @@ export default async function ProviderDashboardPage() {
         <div className="rounded-3xl bg-white p-8 shadow">
 
 
+
           <div className="flex items-center justify-between">
 
 
             <h2 className="text-2xl font-bold">
+
               My Services
+
             </h2>
 
 
-            <AddServiceModal />
+
+            <AddServiceModal/>
 
 
           </div>
@@ -196,86 +398,88 @@ export default async function ProviderDashboardPage() {
 
 
 
+
           {
-            provider?.services?.length === 0 ? (
+            provider.services.length === 0 ? (
 
 
               <p className="mt-6 text-gray-500">
-                No services created yet.
+
+                No services added yet.
+
               </p>
 
 
-
-            ) : (
-
+            ):(
 
 
-              <div className="mt-6 grid gap-4 md:grid-cols-2">
-
-
-                {provider?.services?.map((service) => (
-
-
-                  <div
-
-                    key={service.id}
-
-                    className="rounded-xl border p-5"
-
-                  >
-
-
-                    <h3 className="font-bold">
-                      {service.name}
-                    </h3>
+              <div className="mt-6 grid gap-5 md:grid-cols-2">
 
 
 
+                {
+                  provider.services.map(service=>(
 
-                    <p className="mt-2 text-gray-500">
-                      {service.description}
-                    </p>
+
+                    <div
+                      key={service.id}
+                      className="rounded-2xl border p-5"
+                    >
+
+
+
+                      <h3 className="text-xl font-bold">
+
+                        {service.name}
+
+                      </h3>
 
 
 
 
-                    <p className="mt-3 font-semibold">
-                      Rs. {service.price}
-                    </p>
+                      <p className="mt-2 text-gray-500">
+
+                        {service.description}
+
+                      </p>
+
+
+
+
+                      <p className="mt-3 font-bold text-blue-600">
+
+                        Rs. {service.price}
+
+                      </p>
 
 
 
 
 
-                    <div className="mt-4 flex gap-3">
+
+                      <div className="mt-5 flex gap-3">
 
 
-                      <EditServiceModal
-                        service={service}
-                      />
+                        <EditServiceModal service={service}/>
 
 
+                        <DeleteServiceModal
+                          serviceId={service.id}
+                        />
 
-                      <DeleteServiceModal
-                        serviceId={service.id}
-                      />
+
+                      </div>
 
 
 
                     </div>
 
 
-
-                  </div>
-
-
-
-                ))}
-
+                  ))
+                }
 
 
               </div>
-
 
 
             )
@@ -293,7 +497,7 @@ export default async function ProviderDashboardPage() {
 
 
 
-        {/* Booking Requests */}
+        {/* Bookings */}
 
 
 
@@ -301,13 +505,18 @@ export default async function ProviderDashboardPage() {
 
 
           <h2 className="text-2xl font-bold">
+
             Booking Requests
+
           </h2>
 
 
 
-          <ProviderBookings />
+          <div className="mt-6">
 
+            <ProviderBookings/>
+
+          </div>
 
 
         </div>
@@ -320,18 +529,18 @@ export default async function ProviderDashboardPage() {
 
 
 
-        {/* Customer Reviews */}
+        {/* Reviews */}
 
 
 
         <div className="rounded-3xl bg-white p-8 shadow">
 
 
-
           <h2 className="text-2xl font-bold">
-            Customer Reviews ⭐
-          </h2>
 
+            Customer Reviews ⭐
+
+          </h2>
 
 
 
@@ -339,96 +548,79 @@ export default async function ProviderDashboardPage() {
           <div className="mt-6 space-y-4">
 
 
+          {
+            totalReviews === 0 ? (
+
+
+              <p className="text-gray-500">
+
+                No reviews yet.
+
+              </p>
+
+
+            ):(
+
+
+              provider.services.map(service=>
+
+                service.reviews.map(review=>(
+
+
+                  <div
+                    key={review.id}
+                    className="rounded-xl border p-5"
+                  >
 
 
 
-            {
-              provider.services.every(
-                (service) =>
-                  service.reviews.length === 0
-              ) ? (
+                    <div className="flex justify-between">
 
 
-                <p className="text-gray-500">
-                  No reviews yet.
-                </p>
+                      <h3 className="font-semibold">
 
+                        {review.customer.name}
 
-
-              ) : (
+                      </h3>
 
 
 
-                provider?.services?.map((service) => (
+                      <span className="text-yellow-600">
 
+                        {"⭐".repeat(review.rating)}
 
-                  service?.reviews?.map((review) => (
-
-
-                    <div
-
-                      key={review.id}
-
-                      className="rounded-xl border p-5"
-
-                    >
-
-
-
-                      <div className="flex justify-between">
-
-
-                        <h3 className="font-semibold">
-                          {review.customer.name}
-                        </h3>
-
-
-
-                        <span className="text-yellow-600">
-                          {"⭐".repeat(review.rating)}
-                        </span>
-
-
-
-                      </div>
-
-
-
-
-
-                      <p className="mt-3 text-gray-600">
-
-                        {review.comment || "No comment"}
-
-                      </p>
-
-
-
-
-
-                      <p className="mt-2 text-sm text-gray-400">
-
-                        Service: {service.name}
-
-                      </p>
-
-
+                      </span>
 
 
                     </div>
 
 
 
-                  ))
+                    <p className="mt-3 text-gray-600">
 
+                      {review.comment || "No comment"}
+
+                    </p>
+
+
+
+                    <p className="mt-2 text-sm text-gray-400">
+
+                      Service: {service.name}
+
+                    </p>
+
+
+                  </div>
 
 
                 ))
 
-
-
               )
-            }
+
+
+            )
+          }
 
 
 
@@ -443,7 +635,6 @@ export default async function ProviderDashboardPage() {
 
 
       </div>
-
 
 
     </div>

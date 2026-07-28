@@ -148,7 +148,7 @@ export default async function AdminDashboardPage() {
       <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
 
 
-        {cards.map((card)=>{
+        {cards?.map((card)=>{
 
 
           const Icon = card.icon;
@@ -210,7 +210,7 @@ export default async function AdminDashboardPage() {
         <div className="mt-5 space-y-4">
 
 
-          {recentBookings.length === 0 ? (
+          {recentBookings?.length === 0 ? (
 
             <p className="text-gray-500">
               No bookings yet.
@@ -275,7 +275,7 @@ export default async function AdminDashboardPage() {
         <div className="mt-5 space-y-4">
 
 
-          {recentUsers.map((user:any)=>(
+          {recentUsers?.map((user:any)=>(
 
 
             <div

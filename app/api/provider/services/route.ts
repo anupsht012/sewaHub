@@ -22,6 +22,7 @@ export async function POST(req: Request) {
     }
 
 
+
     if (user.role !== "PROVIDER") {
       return NextResponse.json(
         {
@@ -34,14 +35,26 @@ export async function POST(req: Request) {
     }
 
 
-    const { name, description, price } = await req.json();
+
+    const {
+      name,
+      category,
+      description,
+      price,
+    } = await req.json();
 
 
 
-    if (!name || !price) {
+
+    if (
+      !name ||
+      !category ||
+      !price
+    ) {
       return NextResponse.json(
         {
-          error: "Name and price are required",
+          error:
+            "Name, category and price are required",
         },
         {
           status: 400,
@@ -51,18 +64,22 @@ export async function POST(req: Request) {
 
 
 
-    const provider = await prisma.provider.findUnique({
-      where: {
-        userId: user.id,
-      },
-    });
+
+    const provider =
+      await prisma.provider.findUnique({
+        where: {
+          userId: user.id,
+        },
+      });
+
 
 
 
     if (!provider) {
       return NextResponse.json(
         {
-          error: "Provider profile not found",
+          error:
+            "Provider profile not found",
         },
         {
           status: 404,
@@ -72,19 +89,29 @@ export async function POST(req: Request) {
 
 
 
-    const service = await prisma.service.create({
-      data: {
 
-        name,
+    const service =
+      await prisma.service.create({
 
-        description,
+        data: {
 
-        price: Number(price),
+          name,
 
-        providerId: provider.id,
+          category,
 
-      },
-    });
+          description:
+            description || null,
+
+          price: Number(price),
+
+          providerId:
+            provider.id,
+
+        },
+
+      });
+
+
 
 
 
@@ -99,14 +126,20 @@ export async function POST(req: Request) {
     );
 
 
+
   } catch (error) {
 
-    console.error("CREATE SERVICE ERROR:", error);
+
+    console.error(
+      "CREATE SERVICE ERROR:",
+      error
+    );
 
 
     return NextResponse.json(
       {
-        error: "Something went wrong",
+        error:
+          "Something went wrong",
       },
       {
         status: 500,

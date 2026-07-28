@@ -2,95 +2,176 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+
 import {
   LayoutDashboard,
-  Users,
   Briefcase,
-  Wrench,
-  Calendar,
-  UserPlus,
+  PlusCircle,
+  CalendarDays,
+  Inbox,
+  Star,
+  User,
+  ClipboardList,
 } from "lucide-react";
 
+
 const links = [
+
   {
     name: "Dashboard",
-    href: "/admin/dashboard",
+    href: "/provider/dashboard",
     icon: LayoutDashboard,
   },
+
+
   {
-    name: "Users",
-    href: "/admin/users",
-    icon: Users,
-  },
-  {
-    name: "Providers",
-    href: "/admin/providers",
+    name: "My Services",
+    href: "/provider/services",
     icon: Briefcase,
   },
+
+
   {
-  name: "Provider Requests",
-  href: "/admin/provider-applications",
-  icon: UserPlus,
-},
-  {
-    name: "Services",
-    href: "/admin/services",
-    icon: Wrench,
+    name: "Add Service",
+    href: "/provider/services/add",
+    icon: PlusCircle,
   },
+
+
   {
     name: "Bookings",
-    href: "/admin/bookings",
-    icon: Calendar,
+    href: "/provider/bookings",
+    icon: CalendarDays,
   },
+  {
+    name: "Service Requests",
+    href: "/provider/requests",
+    icon: ClipboardList,
+  },
+
+  {
+    name: "Offers",
+    href: "/provider/offers",
+    icon: Inbox,
+  },
+
+
+  {
+    name: "Reviews",
+    href: "/provider/reviews",
+    icon: Star,
+  },
+
+
+  {
+    name: "Profile",
+    href: "/provider/profile",
+    icon: User,
+  },
+
 ];
 
-export default function AdminSidebar() {
+
+
+export default function ProviderSidebar() {
+
+
   const pathname = usePathname();
 
+
+
   return (
+
     <aside
+
       className="
         sticky
         top-16
+        flex
         h-[calc(100vh-4rem)]
         w-72
         shrink-0
+        flex-col
         bg-slate-900
         text-white
       "
+
     >
-      {/* Logo */}
-      <div className="border-b border-slate-800 p-6">
+
+
+
+      {/* Header */}
+
+
+      <div
+
+        className="
+          border-b
+          border-slate-800
+          p-6
+        "
+
+      >
+
+
         <h1 className="text-2xl font-bold">
           SewaHub
         </h1>
 
+
         <p className="text-sm text-slate-400">
-          Admin Panel
+          Provider Panel
         </p>
+
+
       </div>
 
+
+
+
+
       {/* Navigation */}
+
+
       <nav
+
         className="
-          h-full
+          flex-1
           overflow-y-auto
-          p-4
           space-y-2
+          p-4
         "
+
       >
+
+
+
         {links.map((link) => {
+
+
           const Icon = link.icon;
+
+
 
           const active =
             pathname === link.href ||
             pathname.startsWith(link.href + "/");
 
+
+
+
           return (
+
+
             <Link
+
               key={link.href}
+
               href={link.href}
+
+
               className={`
+
                 flex
                 items-center
                 gap-3
@@ -98,19 +179,43 @@ export default function AdminSidebar() {
                 px-4
                 py-3
                 transition
-                ${
-                  active
-                    ? "bg-blue-600 text-white"
-                    : "hover:bg-slate-800"
+
+
+                ${active
+                  ? "bg-blue-600 text-white"
+                  : "hover:bg-slate-800"
                 }
+
               `}
+
+
             >
+
+
               <Icon size={20} />
-              <span>{link.name}</span>
+
+
+              <span>
+                {link.name}
+              </span>
+
+
             </Link>
+
+
           );
+
+
         })}
+
+
+
       </nav>
+
+
+
     </aside>
+
   );
+
 }

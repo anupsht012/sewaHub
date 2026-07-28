@@ -1,275 +1,456 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+
 import {
   Card,
   CardContent,
-} from "@/components/ui/card";  
-import { toast } from "sonner"; 
+} from "@/components/ui/card";
+
+import { toast } from "sonner";
 
 
 export default function RequestServiceForm() {
 
 
-  const [loading,setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const [categoriesLoading, setCategoriesLoading] = useState(true);
 
 
-  const [form,setForm] = useState({
+  const [categories, setCategories] = useState<
+    {
+      category: string;
+    }[]
+  >([]);
 
-    category:"",
-    title:"",
-    description:"",
-    location:"",
-    phone:"",
-    budget:"",
-    preferredDate:"",
+
+
+  const [form, setForm] = useState({
+
+    category: "",
+    title: "",
+    description: "",
+    location: "",
+    phone: "",
+    budget: "",
+    preferredDate: "",
 
   });
 
 
 
+
+
+  useEffect(() => {
+
+
+    async function fetchCategories() {
+
+
+      try {
+
+
+        const res = await fetch(
+          "/api/categories"
+        );
+
+
+        const data = await res.json();
+
+
+        if (!res.ok) {
+
+          throw new Error(
+            data.error || "Failed to load categories"
+          );
+
+        }
+
+
+        setCategories(data);
+
+
+      } catch (error:any) {
+
+
+        toast.error(
+          error.message
+        );
+
+
+      } finally {
+
+
+        setCategoriesLoading(false);
+
+
+      }
+
+
+    }
+
+
+    fetchCategories();
+
+
+  }, []);
+
+
+
+
+
+
+
   function handleChange(
-    e:React.ChangeEvent<
+    e: React.ChangeEvent<
       HTMLInputElement |
       HTMLTextAreaElement |
       HTMLSelectElement
     >
-  ){
+  ) {
+
 
     setForm({
 
       ...form,
 
-      [e.target.name]:
-      e.target.value,
+      [e.target.name]: e.target.value,
 
     });
+
 
   }
 
 
 
-async function handleSubmit(
-  
-  e: React.FormEvent
-) {
 
-  e.preventDefault();
 
-  setLoading(true);
 
-  try {
 
-    const res = await fetch(
-      "/api/request-service",
-      {
-        method: "POST",
+  async function handleSubmit(
+    e: React.FormEvent
+  ) {
 
-        headers: {
-          "Content-Type": "application/json",
-        },
 
-        body: JSON.stringify({
+    e.preventDefault();
 
-          ...form,
 
-          budget:
-            form.budget
+    setLoading(true);
+
+
+
+    try {
+
+
+      const res = await fetch(
+        "/api/request-service",
+        {
+
+          method: "POST",
+
+          headers: {
+
+            "Content-Type": "application/json",
+
+          },
+
+
+          body: JSON.stringify({
+
+            ...form,
+
+            budget: form.budget
               ? Number(form.budget)
               : null,
 
-          preferredDate:
-            form.preferredDate
-              ? new Date(form.preferredDate)
-              : null,
 
-        }),
+            preferredDate:
+              form.preferredDate
+                ? new Date(form.preferredDate)
+                : null,
+
+
+          }),
+
+        }
+      );
+
+
+
+      const data = await res.json();
+
+
+
+
+      if (!res.ok) {
+
+
+        throw new Error(
+          data.error || "Request failed"
+        );
+
 
       }
-    );
-
-
-    const data = await res.json();
 
 
 
-    console.log("API RESPONSE:", data);
 
-
-
-    if(!res.ok){
-
-      throw new Error(
-        data.error || "Request failed"
+      toast.success(
+        "Service request submitted"
       );
+
+
+
+      setForm({
+
+        category: "",
+        title: "",
+        description: "",
+        location: "",
+        phone: "",
+        budget: "",
+        preferredDate: "",
+
+      });
+
+
+
+    } catch(error:any) {
+
+
+      toast.error(
+        error.message
+      );
+
+
+    } finally {
+
+
+      setLoading(false);
+
 
     }
 
 
-
-    toast.success(
-      "Service request submitted"
-    );
-
-
-
-    setForm({
-
-      category:"",
-      title:"",
-      description:"",
-      location:"",
-      phone:"",
-      budget:"",
-      preferredDate:"",
-
-    });
-
-
-
-  } catch(error:any) {
-
-
-    console.error(error);
-
-
-    toast.error(
-      error.message
-    );
-
-
-  } finally {
-
-
-    setLoading(false);
-
-
   }
 
-}
+
+
+
 
 
 
   return (
 
-    <Card className="rounded-3xl shadow">
 
-      <CardContent className="p-6 md:p-10">
+    <Card className="rounded-2xl shadow-sm">
+
+
+      <CardContent className="p-5 md:p-6">
 
 
         <form
           onSubmit={handleSubmit}
-          className="space-y-5"
+          className="space-y-3"
         >
 
 
+
           <select
+
             name="category"
+
             value={form.category}
+
             onChange={handleChange}
-            className="w-full rounded-lg border p-3"
+
+            className="
+              w-full
+              rounded-lg
+              border
+              p-2.5
+              text-sm
+            "
+
             required
+
           >
 
             <option value="">
-              Select Service
+
+              {
+                categoriesLoading
+                ? "Loading categories..."
+                : "Select Service"
+              }
+
             </option>
 
-            <option>
-              Electrician
-            </option>
 
-            <option>
-              Plumber
-            </option>
+            {categories.map((item)=>(
+              
+              <option
+                key={item.category}
+                value={item.category}
+              >
 
-            <option>
-              Cleaner
-            </option>
+                {item.category}
 
-            <option>
-              Painter
-            </option>
+              </option>
 
-            <option>
-              Tutor
-            </option>
+            ))}
 
-            <option>
-              Carpenter
-            </option>
 
           </select>
 
 
 
+
+
+
           <Input
+
             name="title"
+
             placeholder="Service title"
+
             value={form.title}
+
             onChange={handleChange}
+
             required
+
           />
+
+
+
+
 
 
 
           <Textarea
+
             name="description"
+
             placeholder="Describe your requirement"
+
             value={form.description}
+
             onChange={handleChange}
-            rows={5}
+
+            rows={3}
+
             required
+
           />
 
 
 
-          <Input
-            name="location"
-            placeholder="Location"
-            value={form.location}
-            onChange={handleChange}
-            required
-          />
 
 
 
-          <Input
-            name="phone"
-            placeholder="Phone number"
-            value={form.phone}
-            onChange={handleChange}
-            required
-          />
+
+          <div className="grid gap-3 md:grid-cols-2">
+
+
+            <Input
+
+              name="location"
+
+              placeholder="Location"
+
+              value={form.location}
+
+              onChange={handleChange}
+
+              required
+
+            />
 
 
 
-          <Input
-            name="budget"
-            type="number"
-            placeholder="Budget (optional)"
-            value={form.budget}
-            onChange={handleChange}
-          />
+            <Input
+
+              name="phone"
+
+              placeholder="Phone number"
+
+              value={form.phone}
+
+              onChange={handleChange}
+
+              required
+
+            />
+
+
+          </div>
 
 
 
-          <Input
-            name="preferredDate"
-            type="date"
-            value={form.preferredDate}
-            onChange={handleChange}
-          />
+
+
+
+
+
+          <div className="grid gap-3 md:grid-cols-2">
+
+
+            <Input
+
+              name="budget"
+
+              type="number"
+
+              placeholder="Budget (optional)"
+
+              value={form.budget}
+
+              onChange={handleChange}
+
+            />
+
+
+
+            <Input
+
+              name="preferredDate"
+
+              type="date"
+
+              value={form.preferredDate}
+
+              onChange={handleChange}
+
+            />
+
+
+          </div>
+
+
+
+
 
 
 
           <Button
+
             disabled={loading}
+
             type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-700"
+
+            className="
+              mt-2
+              w-full
+              bg-blue-600
+              hover:bg-blue-700
+            "
+
           >
 
             {
@@ -281,12 +462,16 @@ async function handleSubmit(
           </Button>
 
 
+
+
         </form>
 
 
       </CardContent>
 
+
     </Card>
+
 
   );
 

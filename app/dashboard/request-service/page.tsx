@@ -1,12 +1,17 @@
 import { redirect } from "next/navigation";
+
 import { getCurrentUser } from "@/lib/auth/get-user";
+
 import RequestServiceForm from "@/components/customer/RequestServiceForm";
+
 
 
 export default async function RequestServicePage() {
 
 
+
   const user = await getCurrentUser();
+
 
 
   if (!user) {
@@ -14,6 +19,7 @@ export default async function RequestServicePage() {
     redirect("/login");
 
   }
+
 
 
   if (user.role !== "CUSTOMER") {
@@ -24,51 +30,100 @@ export default async function RequestServicePage() {
 
 
 
+
+
   return (
 
-    <div className="min-h-screen bg-gray-50 p-6 md:p-10">
+
+    <div
+
+      className="
+        min-h-[calc(100vh-4rem)]
+        flex
+        items-center
+        justify-center
+        p-6
+      "
+
+    >
+
 
 
       <div
+
         className="
-          mx-auto
+          w-full
           max-w-3xl
           rounded-3xl
           bg-white
           p-8
-          shadow
+          shadow-lg
         "
+
       >
+
+
 
 
         <div className="mb-8">
 
-          <h1 className="text-3xl font-bold">
+
+
+          <h1
+
+            className="
+              text-3xl
+              font-bold
+              text-gray-900
+            "
+
+          >
 
             Request a Service 🛠️
+
 
           </h1>
 
 
-          <p className="mt-2 text-gray-500">
 
-            Tell us what service you need.
+
+          <p
+
+            className="
+              mt-2
+              text-gray-500
+            "
+
+          >
+
+            Tell us what service you need and providers will respond.
+
 
           </p>
+
+
 
 
         </div>
 
 
 
+
+
         <RequestServiceForm />
+
+
 
 
       </div>
 
 
+
+
     </div>
 
+
   );
+
 
 }

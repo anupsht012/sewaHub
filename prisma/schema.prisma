@@ -52,13 +52,16 @@ model Provider {
 
   offers ProviderOffer[]
 
-  createdAt DateTime @default(now())
+  createdAt       DateTime         @default(now())
+  serviceRequests ServiceRequest[]
 }
 
 model Service {
   id String @id @default(cuid())
 
   name String
+
+  category String
 
   description String?
 
@@ -125,7 +128,10 @@ model ServiceRequest {
 
   customer User @relation(fields: [customerId], references: [id], onDelete: Cascade)
 
-  category String
+  category   String
+  providerId String?
+
+  provider Provider? @relation(fields: [providerId], references: [id], onDelete: Cascade)
 
   title String
 
