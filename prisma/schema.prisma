@@ -7,40 +7,97 @@ datasource db {
   provider = "postgresql"
 }
 
-model User {
-  id String @id @default(cuid())
+// ==========================================
+// USER & AUTHENTICATION
+// ==========================================
 
+model User {
+  id            String  @id @default(cuid())
   name          String
   email         String  @unique
   emailVerified Boolean @default(false)
   image         String?
   password      String?
+  role          Role    @default(CUSTOMER)
 
-  role Role @default(CUSTOMER)
-
-  // Better Auth
   accounts Account[]
   sessions Session[]
 
-  // SewaHub
-  provider Provider?
-
-  bookings Booking[]
-
-  reviews Review[]
-
+  provider             Provider?
+  bookings             Booking[]             @relation("CustomerBookings")
+  reviews              Review[]
   serviceRequests      ServiceRequest[]
   providerApplications ProviderApplication[]
-  createdAt            DateTime              @default(now())
-  updatedAt            DateTime              @updatedAt
+
+  payments      Payment[]
+  notifications Notification[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
+
+model Session {
+  id        String   @id @default(cuid())
+  expiresAt DateTime
+  token     String   @unique
+
+  ipAddress String?
+  userAgent String?
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Account {
+  id String @id @default(cuid())
+
+  accountId  String
+  providerId String
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  accessToken  String?
+  refreshToken String?
+  idToken      String?
+
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+
+  scope    String?
+  password String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([providerId, accountId])
+}
+
+model Verification {
+  id String @id @default(cuid())
+
+  identifier String
+
+  value String
+
+  expiresAt DateTime
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ==========================================
+// PROVIDER & SERVICES
+// ==========================================
 
 model Provider {
   id String @id @default(cuid())
 
   userId String @unique
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   bio String?
 
@@ -52,8 +109,11 @@ model Provider {
 
   offers ProviderOffer[]
 
-  createdAt       DateTime         @default(now())
   serviceRequests ServiceRequest[]
+
+  locationDetail Location?
+
+  createdAt DateTime @default(now())
 }
 
 model Service {
@@ -77,11 +137,15 @@ model Service {
   createdAt DateTime @default(now())
 }
 
+// ==========================================
+// BOOKINGS & REVIEWS
+// ==========================================
+
 model Booking {
   id String @id @default(cuid())
 
   customerId String
-  customer   User   @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  customer   User   @relation("CustomerBookings", fields: [customerId], references: [id], onDelete: Cascade)
 
   serviceId String
   service   Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
@@ -95,6 +159,10 @@ model Booking {
   note String?
 
   status BookingStatus @default(PENDING)
+
+  paymentStatus PaymentStatus @default(PENDING)
+
+  payment Payment?
 
   createdAt DateTime @default(now())
 
@@ -119,19 +187,20 @@ model Review {
   @@unique([customerId, serviceId])
 }
 
-// Customer requests a job
+// ==========================================
+// SERVICE REQUESTS & OFFERS
+// ==========================================
 
 model ServiceRequest {
   id String @id @default(cuid())
 
   customerId String
+  customer   User   @relation(fields: [customerId], references: [id], onDelete: Cascade)
 
-  customer User @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  category String
 
-  category   String
   providerId String?
-
-  provider Provider? @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  provider   Provider? @relation(fields: [providerId], references: [id], onDelete: Cascade)
 
   title String
 
@@ -154,18 +223,14 @@ model ServiceRequest {
   updatedAt DateTime @updatedAt
 }
 
-// Provider sends quotation
-
 model ProviderOffer {
   id String @id @default(cuid())
 
   requestId String
-
-  request ServiceRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  request   ServiceRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
 
   providerId String
-
-  provider Provider @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  provider   Provider @relation(fields: [providerId], references: [id], onDelete: Cascade)
 
   price Float
 
@@ -182,8 +247,7 @@ model ProviderApplication {
   id String @id @default(cuid())
 
   userId String
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   businessName String
 
@@ -216,70 +280,91 @@ model ContactMessage {
   createdAt DateTime @default(now())
 }
 
-model Session {
+// ==========================================
+// PAYMENTS, NOTIFICATIONS & LOCATIONS
+// ==========================================
+
+model Payment {
   id String @id @default(cuid())
 
-  expiresAt DateTime
+  bookingId String  @unique
+  booking   Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
 
-  token String @unique
+  amount Float
 
-  ipAddress String?
+  method PaymentMethod
 
-  userAgent String?
+  status PaymentStatus @default(PENDING)
 
-  userId String
+  transactionUuid String @unique
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  pidx String? @unique
+
+  refId String?
 
   createdAt DateTime @default(now())
 
   updatedAt DateTime @updatedAt
+  user      User?    @relation(fields: [userId], references: [id])
+  userId    String?
 }
 
-model Account {
+model Notification {
   id String @id @default(cuid())
-
-  accountId String
-
-  providerId String
 
   userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title String
 
-  accessToken String?
+  message String
 
-  refreshToken String?
+  type NotificationType
 
-  idToken String?
+  isRead Boolean @default(false)
 
-  accessTokenExpiresAt DateTime?
-
-  refreshTokenExpiresAt DateTime?
-
-  scope String?
-
-  password String?
+  link String?
 
   createdAt DateTime @default(now())
 
-  updatedAt DateTime @updatedAt
-
-  @@unique([providerId, accountId])
+  @@index([userId, isRead])
 }
 
-model Verification {
+model Location {
   id String @id @default(cuid())
 
-  identifier String
+  providerId String?   @unique
+  provider   Provider? @relation(fields: [providerId], references: [id], onDelete: Cascade)
 
-  value String
+  district String
 
-  expiresAt DateTime
+  municipality String
+
+  ward Int?
+
+  city String?
+
+  addressLine String?
+
+  latitude Float?
+
+  longitude Float?
 
   createdAt DateTime @default(now())
 
   updatedAt DateTime @updatedAt
+
+  @@index([district, municipality])
+}
+
+// ==========================================
+// ENUMS
+// ==========================================
+
+enum Role {
+  CUSTOMER
+  PROVIDER
+  ADMIN
 }
 
 enum RequestStatus {
@@ -291,36 +376,44 @@ enum RequestStatus {
 
 enum OfferStatus {
   PENDING
-
   ACCEPTED
-
   REJECTED
-}
-
-enum Role {
-  CUSTOMER
-
-  PROVIDER
-
-  ADMIN
 }
 
 enum BookingStatus {
   PENDING
-
   ACCEPTED
-
   REJECTED
-
   CANCELLED
-
   COMPLETED
 }
 
 enum ApplicationStatus {
   PENDING
-
   APPROVED
-
   REJECTED
+}
+
+enum PaymentMethod {
+  ESEWA
+  KHALTI
+  CASH
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  REFUNDED
+}
+
+enum NotificationType {
+  BOOKING_REQUEST
+  BOOKING_ACCEPTED
+  BOOKING_REJECTED
+  BOOKING_COMPLETED
+  BOOKING_CANCELLED
+  PAYMENT_SUCCESS
+  PAYMENT_FAILED
+  SYSTEM_ALERT
 }

@@ -12,6 +12,7 @@ import {
   Star,
   User,
   ClipboardList,
+  TrendingUp,
 } from "lucide-react";
 
 
@@ -23,7 +24,11 @@ const links = [
     icon: LayoutDashboard,
   },
 
-
+{
+name: "Analytics",
+    href: "/provider/analytics",
+    icon: TrendingUp,
+},
   {
     name: "My Services",
     href: "/provider/services",
