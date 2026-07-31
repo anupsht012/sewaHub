@@ -72,7 +72,7 @@ const steps = [
           sm:text-4xl
           ">
 
-            How SewaHub Nepal Works
+            How KaamSewa Nepal Works
 
           </h2>
 

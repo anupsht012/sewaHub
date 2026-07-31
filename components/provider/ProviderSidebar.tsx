@@ -37,13 +37,6 @@ name: "Analytics",
 
 
   {
-    name: "Add Service",
-    href: "/provider/services/add",
-    icon: PlusCircle,
-  },
-
-
-  {
     name: "Bookings",
     href: "/provider/bookings",
     icon: CalendarDays,
@@ -120,7 +113,7 @@ export default function ProviderSidebar() {
 
 
         <h1 className="text-2xl font-bold">
-          SewaHub
+          KaamSewa
         </h1>
 
 

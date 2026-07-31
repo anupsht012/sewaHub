@@ -122,7 +122,7 @@ export default function EditServiceModal({
 
 
           <textarea
-            className="w-full rounded-md border p-3"
+            className="w-full h-40 rounded-md border p-3"
             value={form.description}
             onChange={(e)=>
               setForm({

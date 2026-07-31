@@ -74,7 +74,7 @@ export default function RegisterPage() {
 
 
         <p className="mt-2 text-gray-500">
-          Join SewaHub Nepal today.
+          Join KaamSewa Nepal today.
         </p>
 
 

@@ -4,8 +4,8 @@ import { getCurrentUser } from "@/lib/auth/get-user";
 
 import EditProviderModal from "@/components/provider/EditProviderModal";
 import AddServiceModal from "@/components/provider/AddServiceModal";
-import EditServiceModal from "@/components/shared/EditServiceModal";
-import DeleteServiceModal from "@/components/shared/DeleteServiceModal";
+import EditServiceModal from "@/components/provider/EditServiceModal";
+import DeleteServiceModal from "@/components/provider/DeleteServiceModal";
 import ProviderBookings from "@/components/provider/ProviderBookings";
 
 import {
@@ -184,7 +184,7 @@ export default async function ProviderDashboardPage() {
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex items-center justify-end gap-3">
-                          <EditServiceModal service={service} />
+                          <EditServiceModal service={service}  />
                           <DeleteServiceModal serviceId={service.id} />
                         </div>
                       </TableCell>

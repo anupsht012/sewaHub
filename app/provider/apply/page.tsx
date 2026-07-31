@@ -30,7 +30,7 @@ export default async function ProviderApplyPage() {
 
 
         <p className="mt-2 text-gray-500">
-          Offer your services to customers on SewaHub Nepal.
+          Offer your services to customers on KaamSewa Nepal.
         </p>
 
 

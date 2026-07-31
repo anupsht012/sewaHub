@@ -12,7 +12,7 @@ export default function TermsPage() {
 
           <p className="mt-4 max-w-3xl text-blue-100">
             Please read these Terms and Conditions carefully before using
-            SewaHub Nepal.
+            Kaamsewa Nepal.
           </p>
 
         </div>
@@ -29,7 +29,7 @@ export default function TermsPage() {
             </h2>
 
             <p className="mt-3 text-gray-600">
-              By using SewaHub Nepal, you agree to comply with these Terms
+              By using Kaamsewa Nepal, you agree to comply with these Terms
               and Conditions.
             </p>
           </div>
@@ -86,7 +86,7 @@ export default function TermsPage() {
             </h2>
 
             <p className="mt-3 text-gray-600">
-              SewaHub Nepal acts as a marketplace connecting customers
+              Kaamsewa Nepal acts as a marketplace connecting customers
               and providers. We are not responsible for disputes,
               damages, or losses arising from services provided by third
               parties.
@@ -122,7 +122,7 @@ export default function TermsPage() {
             </h2>
 
             <p className="mt-3 text-gray-600">
-              support@sewahub.com
+              support@kaamsewa.com
               <br />
               Kathmandu, Nepal
             </p>

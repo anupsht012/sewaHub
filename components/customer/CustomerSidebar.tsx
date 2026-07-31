@@ -71,7 +71,7 @@ export default function CustomerSidebar() {
     >
       {/* Header */}
       <div className="border-b border-slate-800 p-4 md:p-6">
-        <h1 className="text-xl font-bold md:text-2xl">SewaHub</h1>
+        <h1 className="text-xl font-bold md:text-2xl">KaamSewa</h1>
         <p className="text-xs text-slate-400 md:text-sm">Customer Panel</p>
       </div>
 

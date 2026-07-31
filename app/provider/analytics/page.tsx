@@ -28,16 +28,20 @@ export default async function ProviderAnalyticsPage() {
 
   // 2. Fetch provider aggregated stats with proper relation paths
   const [payments, bookingStats, reviews] = await Promise.all([
-    prisma.payment.findMany({
-      where: {
-        providerId: user.id,
-        status: "SUCCESS",
+  prisma.payment.findMany({
+  where: {
+    status: "SUCCESS",
+    booking: {
+      service: {
+        providerId: provider.id,
       },
-      select: {
-        amount: true,
-        createdAt: true,
-      },
-    }),
+    },
+  },
+  select: {
+    amount: true,
+    createdAt: true,
+  },
+}),
     prisma.booking.groupBy({
       by: ["status"],
       where: {

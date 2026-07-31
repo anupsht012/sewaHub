@@ -17,6 +17,7 @@ export async function PATCH(
     const user = await getCurrentUser();
 
 
+
     if (!user || user.role !== "PROVIDER") {
 
       return NextResponse.json(
@@ -32,6 +33,8 @@ export async function PATCH(
 
 
 
+
+
     const { id } = await params;
 
 
@@ -40,6 +43,7 @@ export async function PATCH(
 
 
     const { status } = body;
+
 
 
 
@@ -65,6 +69,7 @@ export async function PATCH(
 
 
 
+
     const provider = await prisma.provider.findUnique({
 
       where: {
@@ -72,6 +77,8 @@ export async function PATCH(
       },
 
     });
+
+
 
 
 
@@ -91,6 +98,9 @@ export async function PATCH(
 
 
 
+
+
+
     const booking = await prisma.booking.findFirst({
 
       where: {
@@ -105,7 +115,16 @@ export async function PATCH(
 
       },
 
+      include: {
+
+        service: true,
+
+        payment: true,
+
+      },
+
     });
+
 
 
 
@@ -123,6 +142,41 @@ export async function PATCH(
       );
 
     }
+
+
+
+
+
+
+
+    // Prevent completing without successful payment
+    if (status === "COMPLETED") {
+
+
+      if (
+        !booking.payment ||
+        booking.payment.status !== "SUCCESS"
+      ) {
+
+
+        return NextResponse.json(
+          {
+            error:
+              "Payment must be completed before marking booking as completed.",
+          },
+          {
+            status: 400,
+          }
+        );
+
+
+      }
+
+
+    }
+
+
+
 
 
 
@@ -148,7 +202,134 @@ export async function PATCH(
 
 
 
+
+
+
+    // Provider accepted booking
+    if (status === "ACCEPTED") {
+
+
+      await prisma.notification.create({
+
+        data: {
+
+          userId:
+            booking.customerId,
+
+
+          title:
+            "Booking Accepted",
+
+
+          message:
+            "Your booking has been accepted. Please complete your payment.",
+
+
+          type:
+            "BOOKING_ACCEPTED",
+
+
+          link:
+            `/dashboard/bookings/${booking.id}/pay`,
+
+        },
+
+      });
+
+
+    }
+
+
+
+
+
+
+
+
+    // Provider rejected booking
+    if (status === "REJECTED") {
+
+
+      await prisma.notification.create({
+
+        data: {
+
+          userId:
+            booking.customerId,
+
+
+          title:
+            "Booking Rejected",
+
+
+          message:
+            "Unfortunately, your booking request was rejected by the provider.",
+
+
+          type:
+            "BOOKING_REJECTED",
+
+
+          link:
+            `/dashboard/bookings/${booking.id}`,
+
+        },
+
+      });
+
+
+    }
+
+
+
+
+
+
+
+
+    // Provider completed booking
+    if (status === "COMPLETED") {
+
+
+      await prisma.notification.create({
+
+        data: {
+
+          userId:
+            booking.customerId,
+
+
+          title:
+            "Booking Completed",
+
+
+          message:
+            "Your service has been completed. You can now leave a review.",
+
+
+          type:
+            "BOOKING_COMPLETED",
+
+
+          link:
+            `/dashboard/bookings/${booking.id}/review`,
+
+        },
+
+      });
+
+
+    }
+
+
+
+
+
+
+
     return NextResponse.json(updated);
+
+
 
 
 
@@ -164,11 +345,12 @@ export async function PATCH(
     return NextResponse.json(
 
       {
-        error: "Server error",
+        error:
+          "Server error",
       },
 
       {
-        status: 500,
+        status:500,
       }
 
     );

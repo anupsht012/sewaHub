@@ -45,6 +45,7 @@ export async function POST(
 
 
 
+
     const existingApplication =
       await prisma.providerApplication.findFirst({
 
@@ -74,7 +75,6 @@ export async function POST(
       );
 
     }
-
 
 
 
@@ -119,8 +119,6 @@ export async function POST(
 
 
 
-
-
     const application =
       await prisma.providerApplication.create({
 
@@ -148,12 +146,65 @@ export async function POST(
 
 
 
+    // Notify all admins
+    const admins = await prisma.user.findMany({
+
+      where: {
+
+        role: "ADMIN",
+
+      },
+
+    });
+
+
+
+
+
+    if (admins.length > 0) {
+
+      await prisma.notification.createMany({
+
+        data: admins.map((admin) => ({
+
+          userId: admin.id,
+
+          title:
+            "New Provider Application",
+
+          message:
+            `${businessName} has applied to become a provider.`,
+
+          type:
+            "SYSTEM_ALERT",
+
+          link:
+            `/admin/provider-applications/${application.id}`,
+
+        })),
+
+      });
+
+    }
+
+
+
+
+
+
+
     return NextResponse.json(
+
       {
         success: true,
+
         application,
+
       }
+
     );
+
+
 
 
 
@@ -168,14 +219,17 @@ export async function POST(
 
 
     return NextResponse.json(
+
       {
         error:
           error.message ||
           "Something went wrong",
       },
+
       {
-        status: 500,
+        status:500,
       }
+
     );
 
 

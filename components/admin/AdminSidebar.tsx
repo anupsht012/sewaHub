@@ -75,7 +75,7 @@ export default function AdminSidebar() {
       {/* Logo */}
       <div className="border-b border-slate-800 p-6">
         <h1 className="text-2xl font-bold">
-          SewaHub
+          KaamSewa
         </h1>
 
         <p className="text-sm text-slate-400">

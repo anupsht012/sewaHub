@@ -7,25 +7,25 @@ import { toast } from "sonner";
 
 export default function CompleteBookingButton({
   bookingId,
+  canComplete,
 }: {
   bookingId: string;
+  canComplete: boolean;
 }) {
 
   const [loading, setLoading] = useState(false);
-
 
 
   async function handleComplete() {
 
     setLoading(true);
 
-
     try {
 
       const res = await fetch(
         `/api/provider/bookings/${bookingId}/complete`,
         {
-          method:"PATCH",
+          method: "PATCH",
         }
       );
 
@@ -33,7 +33,7 @@ export default function CompleteBookingButton({
       const data = await res.json();
 
 
-      if(!res.ok){
+      if (!res.ok) {
 
         throw new Error(
           data.error || "Failed"
@@ -50,12 +50,11 @@ export default function CompleteBookingButton({
       window.location.reload();
 
 
-    } catch(error:any){
+    } catch(error:any) {
 
       toast.error(
         error.message
       );
-
 
     } finally {
 
@@ -70,15 +69,27 @@ export default function CompleteBookingButton({
   return (
 
     <Button
+
       onClick={handleComplete}
-      disabled={loading}
-      className="mt-4 w-full bg-blue-600 hover:bg-blue-700"
+
+      disabled={
+        loading || !canComplete
+      }
+
+      className={
+        canComplete
+        ? "mt-4 w-full bg-blue-600 hover:bg-blue-700"
+        : "mt-4 w-full cursor-not-allowed bg-gray-300 text-gray-600"
+      }
+
     >
 
       {
         loading
         ? "Completing..."
-        : "Mark Completed"
+        : canComplete
+        ? "Mark Completed"
+        : "Payment Pending"
       }
 
     </Button>

@@ -68,24 +68,41 @@ export default async function AdminAnalyticsPage() {
     }),
 
     // Recent Successful Transactions
-    prisma.payment.findMany({
-      where: { status: "SUCCESS" },
-      take: 6,
-      orderBy: { createdAt: "desc" },
+   // Recent Successful Transactions
+prisma.payment.findMany({
+  where: {
+    status: "SUCCESS",
+  },
+  take: 6,
+  orderBy: {
+    createdAt: "desc",
+  },
+  include: {
+    user: {
+      select: {
+        name: true,
+        email: true,
+      },
+    },
+    booking: {
       include: {
-        booking: {
+        service: {
           include: {
-            service: true,
+            provider: {
+              include: {
+                user: {
+                  select: {
+                    name: true,
+                  },
+                },
+              },
+            },
           },
         },
-        customer: {
-          select: { name: true, email: true },
-        },
-        provider: {
-          select: { name: true },
-        },
       },
-    }),
+    },
+  },
+}),
 
     // Top Categories from Service model
     prisma.service.groupBy({

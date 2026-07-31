@@ -45,21 +45,24 @@ export default async function ProviderBookingsPage() {
         providerId: provider.id,
       },
     },
-    include: {
-      customer: {
-        select: {
-          name: true,
-          email: true,
-          image: true,
-        },
-      },
-      service: {
-        select: {
-          name: true,
-          price: true,
-        },
-      },
+   include: {
+  customer: {
+    select: {
+      name: true,
+      email: true,
+      image: true,
     },
+  },
+
+  service: {
+    select: {
+      name: true,
+      price: true,
+    },
+  },
+
+  payment: true,
+},
     orderBy: {
       createdAt: "desc",
     },
@@ -145,7 +148,7 @@ export default async function ProviderBookingsPage() {
                   </TableCell>
                   <TableCell className="text-right">
                     {booking.status === "ACCEPTED" && (
-                      <CompleteBookingButton bookingId={booking.id} />
+                      <CompleteBookingButton bookingId={booking.id} canComplete ={booking.payment?.status === "SUCCESS"} />
                     )}
                   </TableCell>
                 </TableRow>

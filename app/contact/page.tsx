@@ -177,7 +177,7 @@ export default function ContactPage() {
 
                     <h1 className="text-4xl font-bold md:text-6xl">
 
-                        Contact SewaHub Nepal
+                        Contact KaamSewa Nepal
 
                     </h1>
 
@@ -229,7 +229,7 @@ export default function ContactPage() {
 
                             Whether you are looking for
                             trusted professionals or want
-                            to join SewaHub as a provider,
+                            to join KaamSewa as a provider,
                             contact us anytime.
 
                         </p>
@@ -261,7 +261,7 @@ export default function ContactPage() {
                                     <Mail className="text-blue-600" />
 
                                     <span>
-                                        support@sewahub.com
+                                        support@kaamsewa.com
                                     </span>
 
                                 </div>

@@ -39,7 +39,7 @@ export default async function AdminUsersPage() {
       <div className="mx-auto max-w-6xl">
         <h1 className="text-3xl font-bold">Manage Users</h1>
         <p className="mt-2 text-gray-500">
-          View and manage all SewaHub accounts.
+          View and manage all KaamSewa accounts.
         </p>
 
         <div className="mt-8 overflow-hidden rounded-2xl border bg-white shadow-sm">

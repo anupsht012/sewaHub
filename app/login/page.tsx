@@ -77,7 +77,7 @@ setTimeout(() => {
         </h1>
 
         <p className="mt-2 text-gray-500">
-          Login to your SewaHub account
+          Login to your KaamSewa account
         </p>
 
 
