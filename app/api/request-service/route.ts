@@ -9,19 +9,17 @@ export async function POST(
 
   try {
 
-
     const user = await getCurrentUser();
-
 
 
     if (!user) {
 
       return NextResponse.json(
         {
-          error:"Unauthorized"
+          error: "Unauthorized",
         },
         {
-          status:401
+          status: 401,
         }
       );
 
@@ -29,9 +27,7 @@ export async function POST(
 
 
 
-
     const body = await request.json();
-
 
 
     const {
@@ -41,27 +37,26 @@ export async function POST(
       location,
       phone,
       budget,
-      preferredDate
+      preferredDate,
     } = body;
 
 
 
 
-
-    if(
+    if (
       !category ||
       !title ||
       !description ||
       !location ||
       !phone
-    ){
+    ) {
 
       return NextResponse.json(
         {
-          error:"Please fill all required fields"
+          error: "Please fill all required fields",
         },
         {
-          status:400
+          status: 400,
         }
       );
 
@@ -71,50 +66,100 @@ export async function POST(
 
 
 
-
-
+    // Create service request
     const serviceRequest =
-    await prisma.serviceRequest.create({
+      await prisma.serviceRequest.create({
 
-      data:{
+        data: {
 
+          customerId: user.id,
 
-        customerId:user.id,
+          category,
 
+          title,
 
-        category,
+          description,
 
+          location,
 
-        title,
-
-
-        description,
-
-
-        location,
+          phone,
 
 
-        phone,
+          budget:
+            budget
+              ? Number(budget)
+              : null,
 
 
+          preferredDate:
+            preferredDate
+              ? new Date(preferredDate)
+              : null,
 
-        budget:
-          budget
-          ? Number(budget)
-          : null,
+        },
 
-
-
-        preferredDate:
-          preferredDate
-          ? new Date(preferredDate)
-          : null,
+      });
 
 
 
-      }
+
+
+    // Find providers who offer this category
+    const providers = await prisma.provider.findMany({
+
+      where: {
+
+        services: {
+
+          some: {
+
+            category: category,
+
+          },
+
+        },
+
+      },
+
+      include: {
+
+        user: true,
+
+      },
 
     });
+
+
+
+
+
+    // Send notification to matching providers
+    if (providers.length > 0) {
+
+
+      await prisma.notification.createMany({
+
+        data: providers.map((provider) => ({
+
+          userId: provider.user.id,
+
+          title: "New Service Request",
+
+          message:
+            `New ${category} service request available in ${location}.`,
+
+          type: "BOOKING_REQUEST",
+
+          link:
+            `/provider/requests/${serviceRequest.id}`,
+
+        })),
+
+      });
+
+
+    }
+
 
 
 
@@ -124,8 +169,10 @@ export async function POST(
     return NextResponse.json(
 
       {
-        success:true,
-        request:serviceRequest
+        success: true,
+
+        request: serviceRequest,
+
       }
 
     );
@@ -134,7 +181,7 @@ export async function POST(
 
 
 
-  } catch(error:any) {
+  } catch (error: any) {
 
 
     console.error(
@@ -147,18 +194,18 @@ export async function POST(
     return NextResponse.json(
 
       {
-        error:error.message ||
-        "Something went wrong"
+        error:
+          error.message ||
+          "Something went wrong",
       },
 
       {
-        status:500
+        status: 500,
       }
 
     );
 
 
   }
-
 
 }

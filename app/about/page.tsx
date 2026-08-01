@@ -67,7 +67,7 @@ export default function AboutPage() {
 
           <p className="mx-auto mt-6 max-w-3xl text-lg text-blue-100">
 
-            SewaHub Nepal is a service marketplace that makes it easier
+            KaamSewa Nepal is a service marketplace that makes it easier
             for customers to find reliable professionals and helps skilled
             providers grow their work.
 
@@ -148,7 +148,7 @@ export default function AboutPage() {
 
               Whether you need a home repair, education support,
               cleaning service, or skilled professional,
-              SewaHub connects you with trusted people nearby.
+              KaamSewa connects you with trusted people nearby.
 
             </p>
 
@@ -265,7 +265,7 @@ export default function AboutPage() {
 
             <h2 className="text-4xl font-bold">
 
-              Why Choose SewaHub?
+              Why Choose KaamSewa?
 
             </h2>
 

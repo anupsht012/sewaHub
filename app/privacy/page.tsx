@@ -12,7 +12,7 @@ export default function PrivacyPolicyPage() {
 
           <p className="mt-4 max-w-3xl text-blue-100">
             Your privacy matters to us. This Privacy Policy explains how
-            SewaHub Nepal collects, uses, stores, and protects your
+            Kaamsewa Nepal collects, uses, stores, and protects your
             personal information.
           </p>
 
@@ -82,7 +82,7 @@ export default function PrivacyPolicyPage() {
             </h2>
 
             <p className="mt-3 text-gray-600">
-              SewaHub Nepal may use cookies and similar technologies to
+              Kaamsewa Nepal may use cookies and similar technologies to
               improve website performance and remember user preferences.
             </p>
           </div>
@@ -104,7 +104,7 @@ export default function PrivacyPolicyPage() {
             </h2>
 
             <p className="mt-3 text-gray-600">
-              Email: support@sewahub.com
+              Email: support@kaamsewa.com
               <br />
               Kathmandu, Nepal
             </p>

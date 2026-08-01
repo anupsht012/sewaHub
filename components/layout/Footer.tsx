@@ -1,5 +1,6 @@
+import Image from "next/image";
 import Link from "next/link";
-
+import LOGO from "@/public/logo_footer.png";
 
 const links = [
 
@@ -61,15 +62,17 @@ export default function Footer() {
           <div>
 
 
-            <h2 className="
-            text-2xl
-            font-bold
-            text-white
-            ">
+            <Link
+              href="/"
+              className="flex items-center gap-2"
+            >
 
-              SewaHub Nepal
+              <div>
+                <Image src={LOGO} alt="KaamSewa Logo" width={150} height={150} />
+              </div>
 
-            </h2>
+
+            </Link>
 
 
 
@@ -152,7 +155,7 @@ export default function Footer() {
             ">
 
 
-              {links?.map((link)=>(
+              {links?.map((link) => (
 
 
                 <Link
@@ -226,7 +229,7 @@ export default function Footer() {
 
               <p>
 
-                ✉️ support@sewahub.com
+                ✉️ support@kaamsewa.com
 
               </p>
 
@@ -272,7 +275,7 @@ export default function Footer() {
         ">
 
 
-          © 2026 SewaHub Nepal.
+          © 2026 KaamSewa Nepal.
           All rights reserved.
 
 

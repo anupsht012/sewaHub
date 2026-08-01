@@ -9,6 +9,8 @@ import {
   Wrench,
   Calendar,
   UserPlus,
+  TrendingUp,
+  DollarSign,
 } from "lucide-react";
 
 const links = [
@@ -18,9 +20,24 @@ const links = [
     icon: LayoutDashboard,
   },
   {
+    name: "Analytics",
+    href: "/admin/analytics",
+    icon: TrendingUp,
+  },
+  {
     name: "Users",
     href: "/admin/users",
     icon: Users,
+  },
+   {
+    name: "Services",
+    href: "/admin/services",
+    icon: Wrench,
+  },
+  {
+    name: "Bookings",
+    href: "/admin/bookings",
+    icon: Calendar,
   },
   {
     name: "Providers",
@@ -33,15 +50,11 @@ const links = [
   icon: UserPlus,
 },
   {
-    name: "Services",
-    href: "/admin/services",
-    icon: Wrench,
-  },
-  {
-    name: "Bookings",
-    href: "/admin/bookings",
-    icon: Calendar,
-  },
+    name: "Payments",
+    href: "/admin/payments",
+    icon: DollarSign,
+  }
+ 
 ];
 
 export default function AdminSidebar() {
@@ -62,7 +75,7 @@ export default function AdminSidebar() {
       {/* Logo */}
       <div className="border-b border-slate-800 p-6">
         <h1 className="text-2xl font-bold">
-          SewaHub
+          KaamSewa
         </h1>
 
         <p className="text-sm text-slate-400">

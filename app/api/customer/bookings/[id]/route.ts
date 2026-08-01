@@ -14,11 +14,18 @@ export async function PATCH(
 
 
     if (!user || user.role !== "CUSTOMER") {
+
       return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
+        {
+          error: "Unauthorized",
+        },
+        {
+          status: 401,
+        }
       );
+
     }
+
 
 
     const { id } = await params;
@@ -28,51 +35,169 @@ export async function PATCH(
     const booking = await prisma.booking.findFirst({
 
       where: {
+
         id,
+
         customerId: user.id,
+
+      },
+
+      include: {
+
+        service: {
+
+          include: {
+
+            provider: {
+
+              include: {
+
+                user: true,
+
+              },
+
+            },
+
+          },
+
+        },
+
       },
 
     });
+
+
 
 
 
     if (!booking) {
 
       return NextResponse.json(
-        { error: "Booking not found" },
-        { status: 404 }
+
+        {
+          error: "Booking not found",
+        },
+
+        {
+          status: 404,
+        }
+
       );
 
     }
+
+
 
 
 
     if (booking.status !== "PENDING") {
 
       return NextResponse.json(
+
         {
-          error: "Only pending bookings can be cancelled"
+          error:
+            "Only pending bookings can be cancelled",
         },
+
         {
-          status: 400
+          status: 400,
         }
+
       );
 
     }
 
 
 
+
+
     const updated = await prisma.booking.update({
 
       where: {
+
         id,
+
       },
 
       data: {
+
         status: "CANCELLED",
+
       },
 
     });
+
+
+
+
+
+
+
+    // Notify provider about cancellation
+    await prisma.notification.create({
+
+      data: {
+
+        userId:
+          booking.service.provider.user.id,
+
+
+        title:
+          "Booking Cancelled",
+
+
+        message:
+          "Customer cancelled the booking.",
+
+
+        type:
+          "BOOKING_CANCELLED",
+
+
+        link:
+          `/provider/bookings/${booking.id}`,
+
+      },
+
+    });
+
+
+
+
+
+
+
+    // Optional: Notify customer also
+    await prisma.notification.create({
+
+      data: {
+
+        userId:
+          user.id,
+
+
+        title:
+          "Booking Cancelled",
+
+
+        message:
+          "Your booking has been cancelled successfully.",
+
+
+        type:
+          "BOOKING_CANCELLED",
+
+
+        link:
+          `/dashboard/bookings/${booking.id}`,
+
+      },
+
+    });
+
+
+
+
 
 
 
@@ -80,17 +205,27 @@ export async function PATCH(
 
 
 
-  } catch(error) {
 
-    console.error(error);
+  } catch (error) {
+
+
+    console.error(
+      "CANCEL BOOKING ERROR:",
+      error
+    );
+
 
     return NextResponse.json(
+
       {
-        error:"Server error"
+        error:
+          "Server error",
       },
+
       {
-        status:500
+        status: 500,
       }
+
     );
 
   }

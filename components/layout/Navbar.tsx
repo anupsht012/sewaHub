@@ -1,13 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { Menu, X, ChevronDown } from "lucide-react";
+import { Menu, X, ChevronDown, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
-
+import Image from "next/image";
+import LOGO from "@/public/logo.png";
+import NotificationBell from "../notifications/NotificationBell";
 
 interface NavUser {
   id: string;
@@ -28,7 +30,7 @@ export default function Navbar({
   const router = useRouter();
 
   const [open, setOpen] = useState(false);
-const [loggingOut, setLoggingOut] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
 
 
   const navLinks = [
@@ -118,21 +120,21 @@ const [loggingOut, setLoggingOut] = useState(false);
 
 
   async function handleLogout() {
-  try {
-  setLoggingOut(true);
-    await authClient.signOut();
+    try {
+      setLoggingOut(true);
+      await authClient.signOut();
 
-    setOpen(false);
+      setOpen(false);
 
-    window.location.href = "/login";
-toast.success("Logged out successfully!");
+      window.location.href = "/login";
+      toast.success("Logged out successfully!");
 
-  } catch (error) {
- setLoggingOut(false);
-    console.error("Logout failed:", error);
+    } catch (error) {
+      setLoggingOut(false);
+      console.error("Logout failed:", error);
 
+    }
   }
-}
 
 
 
@@ -177,40 +179,9 @@ px-4
           className="flex items-center gap-2"
         >
 
-
-          <div
-            className="
-flex
-h-10
-w-10
-items-center
-justify-center
-rounded-xl
-bg-blue-600
-text-lg
-font-bold
-text-white
-"
-          >
-
-            S
-
-          </div>
-
-
-          <div className="hidden sm:block">
-
-            <h1 className="text-lg font-bold">
-              SewaHub Nepal
-            </h1>
-
-
-            <p className="text-xs text-gray-500">
-              Trusted Local Services
-            </p>
-
-
-          </div>
+<div>
+  <Image src={LOGO} alt="KaamSewa Logo" width={90} height={90} />
+</div>
 
 
         </Link>
@@ -390,16 +361,12 @@ hover:bg-gray-100
 
 
 
-              <Button
-                variant="destructive"
-                onClick={handleLogout}
-                    disabled={loggingOut}
-                className="cursor-pointer"
-              >
-
-                Logout
-
-              </Button>
+              <NotificationBell />
+              <Button className="flex items-center gap-2 rounded-lg bg-red-600 px-2 py-2 text-white hover:bg-red-700 transition-colors" 
+              onClick={handleLogout}
+                disabled={loggingOut}>
+      <LogOut size={20} />
+    </Button>
 
 
             </>

@@ -112,7 +112,38 @@ export async function POST(req: Request) {
       });
 
 
+// Notify admins about new service
 
+const admins = await prisma.user.findMany({
+  where: {
+    role: "ADMIN",
+  },
+});
+
+
+if (admins.length > 0) {
+
+  await prisma.notification.createMany({
+
+    data: admins.map((admin) => ({
+
+      userId: admin.id,
+
+      title: "New Service Created",
+
+      message:
+        `${user.name} created a new service: ${service.name}`,
+
+      type: "SERVICE_CREATED",
+
+      link:
+        `/admin/services/${service.id}`,
+
+    })),
+
+  });
+
+}
 
 
     return NextResponse.json(

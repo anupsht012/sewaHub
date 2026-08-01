@@ -1,7 +1,20 @@
 import { redirect } from "next/navigation";
+
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth/get-user";
+
 import UpdateBookingStatusButton from "@/components/admin/UpdateBookingStatusButton";
+
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+
+import { Badge } from "@/components/ui/badge";
+
+import { Separator } from "@/components/ui/separator";
 
 
 
@@ -26,7 +39,13 @@ export default async function AdminBookingsPage() {
 
     include: {
 
-      customer: true,
+      customer: {
+        select: {
+          name: true,
+          email: true,
+        },
+      },
+
 
       service: {
 
@@ -36,7 +55,12 @@ export default async function AdminBookingsPage() {
 
             include: {
 
-              user:true,
+              user: {
+                select: {
+                  name: true,
+                  email: true,
+                },
+              },
 
             },
 
@@ -46,15 +70,15 @@ export default async function AdminBookingsPage() {
 
       },
 
+
+      payment: true,
+
     },
 
 
     orderBy: {
-
-      createdAt:"desc",
-
+      createdAt: "desc",
     },
-
 
   });
 
@@ -64,151 +88,307 @@ export default async function AdminBookingsPage() {
 
   return (
 
-    <div className="min-h-screen bg-gray-50 p-8">
+    <div className="min-h-screen bg-gray-50 p-6 md:p-8">
 
 
-      <div className="mx-auto max-w-7xl">
+      <div className="mx-auto max-w-7xl space-y-6">
 
 
-        <h1 className="text-3xl font-bold">
-          Manage Bookings
-        </h1>
+        <div>
+
+          <h1 className="text-3xl font-bold">
+            Manage Bookings
+          </h1>
 
 
-        <p className="mt-2 text-gray-500">
-          Monitor and manage all service bookings.
-        </p>
+          <p className="mt-2 text-gray-500">
+            Review and manage all customer bookings.
+          </p>
+
+        </div>
 
 
 
 
-        <div className="mt-8 space-y-5">
 
+        {
+          bookings.length === 0 ? (
 
-          {
-            bookings.length === 0 ? (
+            <Card>
 
-              <div className="rounded-2xl bg-white p-8 shadow">
+              <CardContent className="p-8 text-center">
                 No bookings found.
-              </div>
+              </CardContent>
+
+            </Card>
 
 
-            ) : (
+          ) : (
 
 
-              bookings.map((booking)=>(
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
 
 
-                <div
-                  key={booking.id}
-                  className="rounded-3xl bg-white p-6 shadow"
-                >
+              {
+                bookings.map((booking)=>(
 
 
-
-                  <div className="flex justify-between">
-
-
-                    <div className="space-y-2">
-
-
-                      <h2 className="text-xl font-bold">
-                        {booking.service.name}
-                      </h2>
+                  <Card
+                    key={booking.id}
+                    className="rounded-2xl shadow-sm"
+                  >
 
 
-
-                      <p>
-                        👤 Customer:
-                        {" "}
-                        {booking.customer.name}
-                      </p>
+                    <CardHeader>
 
 
-
-                      <p>
-                        🧑‍🔧 Provider:
-                        {" "}
-                        {booking.service.provider.user.name}
-                      </p>
+                      <div className="flex items-start justify-between gap-3">
 
 
+                        <div>
 
-                      <p>
-                        📅
-                        {" "}
-                        {new Date(
-                          booking.bookingDate
-                        ).toLocaleDateString()}
-                      </p>
+                          <CardTitle className="text-xl">
+
+                            {booking.service.name}
+
+                          </CardTitle>
+
+
+                          <p className="mt-1 text-sm text-gray-500">
+
+                            Rs. {booking.service.price}
+
+                          </p>
+
+
+                        </div>
 
 
 
-                      <p>
-                        📍 {booking.address}
-                      </p>
+                        <Badge
 
+                          className={
 
+                            booking.status === "COMPLETED"
 
-                      <p>
-                        📞 {booking.phone}
-                      </p>
+                            ? "bg-blue-100 text-blue-700"
 
+                            :
 
-                    </div>
+                            booking.status === "ACCEPTED"
 
+                            ? "bg-green-100 text-green-700"
 
+                            :
 
+                            booking.status === "CANCELLED"
 
+                            ? "bg-gray-100 text-gray-700"
 
-                    <div className="text-right">
+                            :
 
+                            "bg-yellow-100 text-yellow-700"
 
-                      <span
-                        className="
-                        rounded-full
-                        bg-blue-100
-                        px-4
-                        py-2
-                        text-blue-700
-                        "
-                      >
+                          }
 
-                        {booking.status}
+                        >
 
-                      </span>
+                          {booking.status}
 
+                        </Badge>
 
-
-                      <div className="mt-5">
-
-                        <UpdateBookingStatusButton
-                          bookingId={booking.id}
-                          status={booking.status}
-                        />
 
                       </div>
 
 
-                    </div>
+                    </CardHeader>
 
 
 
-                  </div>
+
+
+                    <CardContent className="space-y-5">
+
+
+                      <div>
+
+
+                        <h3 className="font-semibold">
+                          Customer
+                        </h3>
+
+
+                        <p className="text-sm">
+                          👤 {booking.customer.name}
+                        </p>
+
+
+                        <p className="text-sm text-gray-500">
+                          ✉ {booking.customer.email}
+                        </p>
+
+
+                      </div>
 
 
 
-                </div>
 
 
-              ))
-
-            )
-          }
+                      <Separator />
 
 
 
-        </div>
+
+
+                      <div>
+
+
+                        <h3 className="font-semibold">
+                          Provider
+                        </h3>
+
+
+                        <p className="text-sm">
+                          🧑‍🔧 {booking.service.provider.user.name}
+                        </p>
+
+
+                        <p className="text-sm text-gray-500">
+                          ✉ {booking.service.provider.user.email}
+                        </p>
+
+
+                      </div>
+
+
+
+
+
+                      <Separator />
+
+
+
+
+
+                      <div className="grid grid-cols-2 gap-3 text-sm">
+
+
+                        <div>
+
+                          <p className="font-medium">
+                            Date
+                          </p>
+
+                          <p className="text-gray-500">
+
+                            {
+                              new Date(
+                                booking.bookingDate
+                              ).toLocaleDateString()
+                            }
+
+                          </p>
+
+                        </div>
+
+
+
+
+                        <div>
+
+                          <p className="font-medium">
+                            Payment
+                          </p>
+
+
+                          {
+                            booking.payment ? (
+
+                              <Badge
+
+                                variant="outline"
+
+                                className={
+                                  booking.payment.status === "SUCCESS"
+                                  ? "text-green-600"
+                                  : "text-yellow-600"
+                                }
+
+                              >
+
+                                {booking.payment.status}
+
+                              </Badge>
+
+
+                            ) : (
+
+                              <p className="text-gray-400">
+                                Not paid
+                              </p>
+
+                            )
+
+                          }
+
+
+                        </div>
+
+
+                      </div>
+
+
+
+
+
+                      <div>
+
+                        <p className="font-medium">
+                          Address
+                        </p>
+
+                        <p className="text-sm text-gray-500">
+                          📍 {booking.address}
+                        </p>
+
+                      </div>
+
+
+
+
+
+                      <Separator />
+
+
+
+
+
+                      <UpdateBookingStatusButton
+
+                        bookingId={booking.id}
+
+                        status={booking.status}
+
+                      />
+
+
+
+                    </CardContent>
+
+
+                  </Card>
+
+
+                ))
+              }
+
+
+            </div>
+
+
+          )
+        }
+
 
 
       </div>
@@ -217,4 +397,5 @@ export default async function AdminBookingsPage() {
     </div>
 
   );
+
 }

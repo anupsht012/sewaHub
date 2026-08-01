@@ -101,10 +101,10 @@ export default function BookServiceModal({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
 
-      <DialogTrigger >
-        <Button className="w-full cursor-pointer">
-          Book Now
-        </Button>
+      <DialogTrigger
+        className="inline-flex w-full items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:opacity-90"
+      >
+        Book Now
       </DialogTrigger>
 
       <DialogContent>

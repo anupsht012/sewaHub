@@ -12,6 +12,7 @@ import {
   Star,
   User,
   ClipboardList,
+  TrendingUp,
 } from "lucide-react";
 
 
@@ -23,18 +24,15 @@ const links = [
     icon: LayoutDashboard,
   },
 
-
+{
+name: "Analytics",
+    href: "/provider/analytics",
+    icon: TrendingUp,
+},
   {
     name: "My Services",
     href: "/provider/services",
     icon: Briefcase,
-  },
-
-
-  {
-    name: "Add Service",
-    href: "/provider/services/add",
-    icon: PlusCircle,
   },
 
 
@@ -115,7 +113,7 @@ export default function ProviderSidebar() {
 
 
         <h1 className="text-2xl font-bold">
-          SewaHub
+          KaamSewa
         </h1>
 
 

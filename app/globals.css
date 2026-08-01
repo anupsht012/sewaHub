@@ -121,10 +121,34 @@
   * {
     @apply border-border outline-ring/50;
   }
-  body {
-    @apply bg-background text-foreground;
-  }
+  
   html {
-    @apply font-sans;
+    @apply font-sans text-sm sm:text-base antialiased scroll-smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground min-h-screen overflow-x-hidden text-slate-900 dark:text-slate-100;
+  }
+
+  /* Responsive Headings Scaling */
+  h1 {
+    @apply text-2xl font-bold tracking-tight sm:text-3xl lg:text-4xl;
+  }
+  h2 {
+    @apply text-xl font-semibold tracking-tight sm:text-2xl lg:text-3xl;
+  }
+  h3 {
+    @apply text-lg font-semibold sm:text-xl lg:text-2xl;
+  }
+}
+
+@layer utilities {
+  /* Helper to hide scrollbars for horizontal navigation on mobile */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
 }

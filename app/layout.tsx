@@ -11,7 +11,7 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "SewaHub Nepal",
+  title: "KaamSewa Nepal",
   description: "Trusted Local Services",
 };
 

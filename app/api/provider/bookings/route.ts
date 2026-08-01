@@ -11,36 +11,67 @@ export async function GET() {
 
 
     if (!user) {
+
       return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
+        {
+          error: "Unauthorized",
+        },
+        {
+          status: 401,
+        }
       );
+
     }
+
 
 
     if (user.role !== "PROVIDER") {
+
       return NextResponse.json(
-        { error: "Only providers allowed" },
-        { status: 403 }
+        {
+          error: "Only providers allowed",
+        },
+        {
+          status: 403,
+        }
       );
+
     }
+
 
 
     const provider = await prisma.provider.findUnique({
+
       where: {
         userId: user.id,
       },
+
     });
 
 
+
     if (!provider) {
+
       return NextResponse.json(
-        { error: "Provider profile not found" },
-        { status: 404 }
+        {
+          error: "Provider profile not found",
+        },
+        {
+          status: 404,
+        }
       );
+
     }
 
-console.log("PROVIDER ID:", provider.id);
+
+
+    console.log(
+      "PROVIDER ID:",
+      provider.id
+    );
+
+
+
     const bookings = await prisma.booking.findMany({
 
       where: {
@@ -54,35 +85,77 @@ console.log("PROVIDER ID:", provider.id);
 
       include: {
 
-        customer: true,
+        customer: {
 
-        service: true,
+          select: {
+
+            name: true,
+
+            email: true,
+
+            image: true,
+
+          },
+
+        },
+
+
+        service: {
+
+          select: {
+
+            name: true,
+
+            price: true,
+
+          },
+
+        },
+
+
+        // Added payment relation
+        payment: true,
 
       },
 
 
       orderBy: {
+
         createdAt: "desc",
+
       },
 
     });
 
 
+
+
+
     return NextResponse.json(bookings);
+
 
 
   } catch (error) {
 
-    console.error(error);
+
+    console.error(
+      "PROVIDER BOOKINGS ERROR:",
+      error
+    );
+
 
     return NextResponse.json(
+
       {
         error: "Server error",
       },
+
       {
         status: 500,
       }
+
     );
+
 
   }
 
