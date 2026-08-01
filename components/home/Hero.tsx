@@ -165,7 +165,7 @@ export default function Hero() {
 
               onClick={handleSearch}
 
-              className="h-12 px-8"
+              className="h-12 px-8 cursor-pointer"
 
             >
 

@@ -102,7 +102,7 @@ export default function BookServiceModal({
     <Dialog open={open} onOpenChange={setOpen}>
 
       <DialogTrigger
-        className="inline-flex w-full items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:opacity-90"
+        className="inline-flex w-full cursor-pointer items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition hover:opacity-90"
       >
         Book Now
       </DialogTrigger>
@@ -171,6 +171,7 @@ export default function BookServiceModal({
           <Button
             variant="outline"
             onClick={() => setOpen(false)}
+            className="cursor-pointer"
           >
             Cancel
           </Button>
@@ -178,6 +179,8 @@ export default function BookServiceModal({
           <Button
             onClick={handleBooking}
             disabled={loading}
+            className="cursor-pointer"
+
           >
             {loading ? "Booking..." : "Book Service"}
           </Button>

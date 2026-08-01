@@ -361,8 +361,8 @@ hover:bg-gray-100
 
 
 
-              <NotificationBell />
-              <Button className="flex items-center gap-2 rounded-lg bg-red-600 px-2 py-2 text-white hover:bg-red-700 transition-colors" 
+              <NotificationBell  />
+              <Button className="flex cursor-pointer items-center gap-2 rounded-lg bg-red-600 px-2 py-2 text-white hover:bg-red-700 transition-colors" 
               onClick={handleLogout}
                 disabled={loggingOut}>
       <LogOut size={20} />
@@ -574,7 +574,7 @@ gap-3
 
                     <Button
                       variant="destructive"
-                      className="w-full"
+                      className="w-full cursor-pointer"
                       onClick={handleLogout}
                     >
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
@@ -48,6 +48,11 @@ interface RequestData {
 }
 
 
+interface Category {
+  category: string;
+}
+
+
 
 export default function EditRequestModal({
 
@@ -66,6 +71,11 @@ export default function EditRequestModal({
   const [open, setOpen] = useState(false);
 
   const [loading, setLoading] = useState(false);
+
+  const [categoryLoading, setCategoryLoading] = useState(false);
+
+
+  const [categories, setCategories] = useState<Category[]>([]);
 
 
 
@@ -95,6 +105,81 @@ export default function EditRequestModal({
 
 
 
+  // Fetch categories when modal opens
+
+  useEffect(() => {
+
+
+    async function fetchCategories() {
+
+
+      try {
+
+
+        setCategoryLoading(true);
+
+
+        const response = await fetch(
+          "/api/categories"
+        );
+
+
+        const data = await response.json();
+
+
+        if (!response.ok) {
+
+          throw new Error(
+            data.error || "Failed to load categories"
+          );
+
+        }
+
+
+        setCategories(data);
+
+
+      } catch(error) {
+
+
+        console.error(
+          "CATEGORY FETCH ERROR:",
+          error
+        );
+
+
+        toast.error(
+          "Failed to load categories"
+        );
+
+
+      } finally {
+
+
+        setCategoryLoading(false);
+
+
+      }
+
+
+    }
+
+
+
+    if(open){
+
+      fetchCategories();
+
+    }
+
+
+  }, [open]);
+
+
+
+
+
+
   function handleChange(
     e: React.ChangeEvent<
       HTMLInputElement |
@@ -102,6 +187,7 @@ export default function EditRequestModal({
       HTMLSelectElement
     >
   ) {
+
 
     setForm({
 
@@ -111,7 +197,10 @@ export default function EditRequestModal({
 
     });
 
+
   }
+
+
 
 
 
@@ -145,6 +234,7 @@ export default function EditRequestModal({
 
             ...form,
 
+
             budget:
 
               form.budget
@@ -154,6 +244,7 @@ export default function EditRequestModal({
                 : null,
 
 
+
             preferredDate:
 
               form.preferredDate
@@ -161,6 +252,7 @@ export default function EditRequestModal({
                 ? form.preferredDate.toISOString()
 
                 : null,
+
 
           }),
 
@@ -177,13 +269,16 @@ export default function EditRequestModal({
 
       if (!response.ok) {
 
+
         throw new Error(
 
           data.error || "Update failed"
 
         );
 
+
       }
+
 
 
 
@@ -199,7 +294,8 @@ export default function EditRequestModal({
 
 
 
-    } catch (error) {
+
+    } catch(error) {
 
 
       console.error(error);
@@ -212,11 +308,16 @@ export default function EditRequestModal({
 
     } finally {
 
+
       setLoading(false);
+
 
     }
 
+
   }
+
+
 
 
 
@@ -244,6 +345,7 @@ export default function EditRequestModal({
           py-2
           text-sm
           hover:bg-gray-100
+          cursor-pointer
         "
 
       >
@@ -287,6 +389,8 @@ export default function EditRequestModal({
 
 
 
+          {/* Dynamic Category */}
+
           <select
 
             name="category"
@@ -304,32 +408,43 @@ export default function EditRequestModal({
 
           >
 
-            <option value="Electrician">
-              Electrician
+
+            <option value="">
+
+              {
+                categoryLoading
+                  ? "Loading categories..."
+                  : "Select category"
+              }
+
             </option>
 
-            <option value="Plumber">
-              Plumber
-            </option>
 
-            <option value="Cleaner">
-              Cleaner
-            </option>
 
-            <option value="Painter">
-              Painter
-            </option>
+            {
+              categories.map((item)=>(
 
-            <option value="Tutor">
-              Tutor
-            </option>
+                <option
 
-            <option value="Carpenter">
-              Carpenter
-            </option>
+                  key={item.category}
+
+                  value={item.category}
+
+                >
+
+                  {item.category}
+
+                </option>
+
+
+              ))
+            }
+
 
 
           </select>
+
+
 
 
 
@@ -346,6 +461,7 @@ export default function EditRequestModal({
             placeholder="Service title"
 
           />
+
 
 
 
@@ -369,6 +485,8 @@ export default function EditRequestModal({
 
 
 
+
+
           <Input
 
             name="location"
@@ -380,6 +498,8 @@ export default function EditRequestModal({
             placeholder="Location"
 
           />
+
+
 
 
 
@@ -401,6 +521,8 @@ export default function EditRequestModal({
 
 
 
+
+
           <Input
 
             name="budget"
@@ -414,6 +536,8 @@ export default function EditRequestModal({
             placeholder="Budget"
 
           />
+
+
 
 
 
@@ -456,17 +580,19 @@ export default function EditRequestModal({
 
                 form.preferredDate
 
-                  ? format(
+                ?
 
-                      form.preferredDate,
+                format(
+                  form.preferredDate,
+                  "PPP"
+                )
 
-                      "PPP"
+                :
 
-                    )
-
-                  : "Pick preferred date"
+                "Pick preferred date"
 
               }
+
 
 
             </PopoverTrigger>
@@ -496,6 +622,7 @@ export default function EditRequestModal({
 
                 onSelect={(date)=>{
 
+
                   setForm({
 
                     ...form,
@@ -506,6 +633,7 @@ export default function EditRequestModal({
 
 
                 }}
+
 
 
                 disabled={(date)=>
@@ -528,6 +656,7 @@ export default function EditRequestModal({
 
 
 
+
           <button
 
             disabled={loading}
@@ -543,19 +672,26 @@ export default function EditRequestModal({
               text-white
               hover:bg-blue-700
               disabled:opacity-50
+              cursor-pointer
             "
 
           >
+
 
             {
 
               loading
 
-                ? "Saving..."
+              ?
 
-                : "Save Changes"
+              "Saving..."
+
+              :
+
+              "Save Changes"
 
             }
+
 
 
           </button>

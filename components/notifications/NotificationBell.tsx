@@ -29,7 +29,7 @@ export default function NotificationBell() {
     <div className="relative">
       <button
         onClick={() => setOpen(!open)}
-        className="relative rounded-full p-2 hover:bg-gray-100"
+        className="relative cursor-pointer rounded-full p-2 hover:bg-gray-100"
       >
         <Bell className="h-6 w-6" />
 

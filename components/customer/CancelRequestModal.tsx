@@ -146,10 +146,11 @@ export default function CancelRequestModal({
     text-sm
     text-red-600
     hover:bg-gray-100
+    cursor-pointer
   "
             >
                 Cancel
-            </DialogTrigger> 
+            </DialogTrigger>
 
 
 
@@ -209,7 +210,7 @@ export default function CancelRequestModal({
                         variant="outline"
 
                         onClick={() => setOpen(false)}
-
+                        className="cursor-pointer"
                     >
 
                         No, Keep It
@@ -232,6 +233,7 @@ export default function CancelRequestModal({
 
                         onClick={handleCancel}
 
+                        className="cursor-pointer"
 
                     >
 
