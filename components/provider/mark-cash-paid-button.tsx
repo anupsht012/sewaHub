@@ -15,23 +15,23 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
 
 interface MarkCashPaidButtonProps {
   paymentId: string;
 }
 
-export default function MarkCashPaidButton({ paymentId }: MarkCashPaidButtonProps) {
-  const [loading, setLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [open, setOpen] = useState(false);
+export default function MarkCashPaidButton({
+  paymentId,
+}: MarkCashPaidButtonProps) {
   const router = useRouter();
 
-  const handleMarkAsPaid = async (e: React.MouseEvent) => {
-    // Prevent closing dialog immediately on click
-    e.preventDefault();
+  const [loading, setLoading] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [error, setError] = useState("");
+
+  async function handleMarkAsPaid() {
     setLoading(true);
-    setErrorMessage(null);
+    setError("");
 
     try {
       const res = await fetch("/api/payments/mark-cash-collected", {
@@ -39,70 +39,86 @@ export default function MarkCashPaidButton({ paymentId }: MarkCashPaidButtonProp
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ paymentId }),
+        body: JSON.stringify({
+          paymentId,
+        }),
       });
 
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data.error || "Failed to update payment status");
+        throw new Error(data.error || "Failed to update payment");
       }
 
       setOpen(false);
-      // Refresh Server Component data in Next.js
+
       router.refresh();
     } catch (err: any) {
-      console.error(err);
-      setErrorMessage(err.message || "Something went wrong while updating payment.");
+      setError(err.message || "Something went wrong.");
     } finally {
       setLoading(false);
     }
-  };
+  }
 
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
-      <AlertDialogTrigger asChild>
-        <button
-          disabled={loading}
-          className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-emerald-700 disabled:opacity-50"
-        >
-          <Check className="h-3.5 w-3.5" />
-          <span>Mark Cash Paid</span>
-        </button>
+      <AlertDialogTrigger
+        className="
+          inline-flex
+          items-center
+          gap-2
+          rounded-lg
+          bg-emerald-600
+          px-3
+          py-2
+          text-sm
+          font-medium
+          text-white
+          transition
+          hover:bg-emerald-700
+        "
+      >
+        <Check className="h-4 w-4" />
+        Mark Cash Paid
       </AlertDialogTrigger>
 
-      <AlertDialogContent className="rounded-2xl">
+      <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Confirm Cash Collection</AlertDialogTitle>
+          <AlertDialogTitle>
+            Confirm Cash Payment
+          </AlertDialogTitle>
+
           <AlertDialogDescription>
-            Are you sure you have collected the cash payment for this booking? This action will mark the payment as completed.
+            This will mark the payment as successfully collected in cash.
+            <br />
+            <br />
+            This action cannot be undone.
           </AlertDialogDescription>
         </AlertDialogHeader>
 
-        {errorMessage && (
-          <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-xs font-medium text-red-600">
-            {errorMessage}
+        {error && (
+          <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-600">
+            {error}
           </div>
         )}
 
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={loading} onClick={() => setErrorMessage(null)}>
+          <AlertDialogCancel disabled={loading}>
             Cancel
           </AlertDialogCancel>
-          <AlertDialogAction asChild>
-            <Button
-              onClick={handleMarkAsPaid}
-              disabled={loading}
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
-                  Updating...
-                </>
-              ) : (
-                "Confirm Payment"
-              )}
-            </Button>
+
+          <AlertDialogAction
+            onClick={handleMarkAsPaid}
+            disabled={loading}
+          >
+            {loading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Updating...
+              </>
+            ) : (
+              "Confirm Payment"
+            )}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

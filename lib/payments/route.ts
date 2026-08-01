@@ -44,15 +44,13 @@ export async function POST(req: Request) {
         status: "PENDING",
         transactionUuid,
       },
-      create: {
-        bookingId,
-        customerId: user.id,
-        providerId: providerUserId,
-        amount,
-        method,
-        status: "PENDING",
-        transactionUuid,
-      },
+    create: {
+  bookingId,
+  userId: user.id,
+  amount,
+  method,
+  transactionUuid,
+}
     });
 
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";

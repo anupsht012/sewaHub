@@ -68,31 +68,33 @@ export default async function AdminAnalyticsPage() {
     }),
 
     // Recent Successful Transactions
-   // Recent Successful Transactions
-prisma.payment.findMany({
-  where: {
-    status: "SUCCESS",
-  },
-  take: 6,
-  orderBy: {
-    createdAt: "desc",
-  },
-  include: {
-    user: {
-      select: {
-        name: true,
-        email: true,
+    // Recent Successful Transactions
+    prisma.payment.findMany({
+      where: {
+        status: "SUCCESS",
       },
-    },
-    booking: {
+      take: 6,
+      orderBy: {
+        createdAt: "desc",
+      },
       include: {
-        service: {
+        user: {
+          select: {
+            name: true,
+            email: true,
+          },
+        },
+        booking: {
           include: {
-            provider: {
+            service: {
               include: {
-                user: {
-                  select: {
-                    name: true,
+                provider: {
+                  include: {
+                    user: {
+                      select: {
+                        name: true,
+                      },
+                    },
                   },
                 },
               },
@@ -100,9 +102,7 @@ prisma.payment.findMany({
           },
         },
       },
-    },
-  },
-}),
+    }),
 
     // Top Categories from Service model
     prisma.service.groupBy({
@@ -359,12 +359,13 @@ prisma.payment.findMany({
                     className="flex items-center justify-between rounded-xl border border-gray-100 bg-gray-50/50 p-3.5"
                   >
                     <div className="space-y-0.5">
-                      <p className="text-sm font-semibold text-gray-900">
-                        {p.booking?.service?.name || "Service Payment"}
+                      <p className="text-sm font-semibold">
+                        {p.booking.service.name}
                       </p>
+
                       <p className="text-xs text-gray-500">
-                        Paid by {p.customer?.name || "Customer"} via{" "}
-                        <span className="font-semibold text-gray-700">
+                        Paid by {p.user?.name ?? "Customer"} via{" "}
+                        <span className="font-semibold">
                           {p.method}
                         </span>
                       </p>
