@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { Button } from "@/components/ui/button";
-
+import { Tags } from "lucide-react";
 import {
   MapPin,
   BadgeCheck,
@@ -61,9 +61,7 @@ export default async function FeaturedProviders() {
 
   // Select random 3 providers
 
-  const providers = allProviders
-    .sort(() => Math.random() - 0.5)
-    .slice(0, 3);
+ const providers = allProviders.slice(0,3);
 
 
 
@@ -138,12 +136,12 @@ export default async function FeaturedProviders() {
               const rating =
                 reviews.length > 0
                   ? (
-                      reviews.reduce(
-                        (sum, review) =>
-                          sum + review.rating,
-                        0
-                      ) / reviews.length
-                    ).toFixed(1)
+                    reviews.reduce(
+                      (sum, review) =>
+                        sum + review.rating,
+                      0
+                    ) / reviews.length
+                  ).toFixed(1)
 
                   : null;
 
@@ -309,20 +307,26 @@ export default async function FeaturedProviders() {
 
                     <p className="flex items-center gap-2">
 
-                      <MapPin size={16}/>
+                      <MapPin size={16} />
 
                       {provider.location}
 
                     </p>
 
 
+                    <p className="flex items-center gap-2">
 
+                      <Tags size={16} />
+
+                      {provider.category}
+
+                    </p>  
 
 
 
                     <p className="flex items-center gap-2">
 
-                      <Briefcase size={16}/>
+                      <Briefcase size={16} />
 
                       {provider.services.length} Services
 

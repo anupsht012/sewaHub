@@ -7,38 +7,47 @@ export async function POST(req: Request) {
 
   try {
 
+
     const user = await getCurrentUser();
 
 
+
     if (!user) {
+
       return NextResponse.json(
         {
-          error: "Unauthorized",
+          error:"Unauthorized",
         },
         {
-          status: 401,
+          status:401,
         }
       );
+
     }
 
 
 
-    if (user.role !== "PROVIDER") {
+
+    if(user.role !== "PROVIDER"){
+
       return NextResponse.json(
         {
-          error: "Only providers can create services",
+          error:
+          "Only providers can create services",
         },
         {
-          status: 403,
+          status:403,
         }
       );
+
     }
+
+
 
 
 
     const {
       name,
-      category,
       description,
       price,
     } = await req.json();
@@ -46,46 +55,62 @@ export async function POST(req: Request) {
 
 
 
-    if (
+
+    if(
       !name ||
-      !category ||
       !price
-    ) {
+    ){
+
       return NextResponse.json(
         {
           error:
-            "Name, category and price are required",
+          "Name and price are required",
         },
         {
-          status: 400,
+          status:400,
         }
       );
+
     }
+
+
+
 
 
 
 
     const provider =
       await prisma.provider.findUnique({
-        where: {
-          userId: user.id,
+
+        where:{
+          userId:user.id,
         },
+
       });
 
 
 
 
-    if (!provider) {
+
+
+
+    if(!provider){
+
       return NextResponse.json(
         {
           error:
-            "Provider profile not found",
+          "Provider profile not found",
         },
         {
-          status: 404,
+          status:404,
         }
       );
+
     }
+
+
+
+
 
 
 
@@ -93,72 +118,122 @@ export async function POST(req: Request) {
     const service =
       await prisma.service.create({
 
-        data: {
+        data:{
+
 
           name,
 
-          category,
+
+          // Automatically from provider
+
+          category:
+            provider.category,
+
+
 
           description:
             description || null,
 
-          price: Number(price),
+
+
+          price:
+            Number(price),
+
+
 
           providerId:
             provider.id,
+
 
         },
 
       });
 
 
-// Notify admins about new service
-
-const admins = await prisma.user.findMany({
-  where: {
-    role: "ADMIN",
-  },
-});
 
 
-if (admins.length > 0) {
 
-  await prisma.notification.createMany({
 
-    data: admins.map((admin) => ({
 
-      userId: admin.id,
 
-      title: "New Service Created",
 
-      message:
-        `${user.name} created a new service: ${service.name}`,
 
-      type: "SERVICE_CREATED",
+    // Notify admins
 
-      link:
-        `/admin/services/${service.id}`,
+    const admins =
+      await prisma.user.findMany({
 
-    })),
+        where:{
+          role:"ADMIN",
+        },
 
-  });
+      });
 
-}
+
+
+
+
+    if(admins.length > 0){
+
+
+      await prisma.notification.createMany({
+
+        data:
+
+          admins.map((admin)=>({
+
+            userId:
+              admin.id,
+
+
+            title:
+              "New Service Created",
+
+
+            message:
+              `${user.name} created a new service: ${service.name}`,
+
+
+
+            type:
+              "SERVICE_CREATED",
+
+
+
+            link:
+              `/admin/services/${service.id}`,
+
+          })),
+
+      });
+
+
+    }
+
+
+
+
+
 
 
     return NextResponse.json(
+
       {
-        success: true,
+        success:true,
         service,
       },
+
       {
-        status: 201,
+        status:201,
       }
+
     );
 
 
 
-  } catch (error) {
+
+
+  } catch(error){
 
 
     console.error(
@@ -167,15 +242,17 @@ if (admins.length > 0) {
     );
 
 
+
     return NextResponse.json(
       {
         error:
-          "Something went wrong",
+        "Something went wrong",
       },
       {
-        status: 500,
+        status:500,
       }
     );
+
 
   }
 

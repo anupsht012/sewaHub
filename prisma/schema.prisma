@@ -20,9 +20,27 @@ model User {
   password      String?
   role          Role    @default(CUSTOMER)
 
-  accounts Account[]
-  sessions Session[]
+  // Profile
+  phone         String?
+  phoneVerified Boolean   @default(false)
+  gender        Gender?
+  dateOfBirth   DateTime?
+  bio           String?
 
+  // Address
+  province String?
+  district String?
+  city     String?
+  address  String?
+
+  // Emergency Contact
+  emergencyName         String?
+  emergencyPhone        String?
+  emergencyRelationship String?
+
+  accounts             Account[]
+  sessions             Session[]
+  addresses            Address[]
   provider             Provider?
   bookings             Booking[]             @relation("CustomerBookings")
   reviews              Review[]
@@ -34,6 +52,44 @@ model User {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Address {
+  id String @id @default(cuid())
+
+  userId String
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  label String?
+  // Example:
+  // Home
+  // Office
+  // Shop
+
+  province String
+
+  district String
+
+  city String
+
+  area String?
+
+  street String?
+
+  landmark String?
+
+  isDefault Boolean @default(false)
+
+  createdAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
 }
 
 model Session {
@@ -100,6 +156,8 @@ model Provider {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   bio String?
+
+  category String?
 
   location String
 

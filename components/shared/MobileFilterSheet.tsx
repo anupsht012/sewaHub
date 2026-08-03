@@ -10,19 +10,23 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { Filter, Search, MapPin, X } from "lucide-react";
+import { Filter, Search, MapPin, Grid, X } from "lucide-react";
 import Link from "next/link";
 
 interface MobileFilterSheetProps {
   service?: string;
+  category?: string;
   location?: string;
   sortBy?: string;
+  categories?: string[];
 }
 
 export function MobileFilterSheet({
   service,
+  category,
   location,
   sortBy,
+  categories = [],
 }: MobileFilterSheetProps) {
   const [open, setOpen] = useState(false);
 
@@ -32,7 +36,7 @@ export function MobileFilterSheet({
         <Button variant="outline" className="flex items-center gap-2 rounded-xl">
           <Filter className="h-4 w-4 text-slate-600" />
           <span>Filters</span>
-          {(service || location) && (
+          {(service || category || location) && (
             <span className="flex h-2 w-2 rounded-full bg-blue-600" />
           )}
         </Button>
@@ -43,6 +47,7 @@ export function MobileFilterSheet({
         </SheetHeader>
 
         <form method="GET" onSubmit={() => setOpen(false)} className="space-y-6">
+          {/* Service Keyword */}
           <div className="space-y-2">
             <label className="text-xs font-bold uppercase tracking-wider text-slate-500">
               Service
@@ -58,6 +63,29 @@ export function MobileFilterSheet({
             </div>
           </div>
 
+          {/* Service Category */}
+          <div className="space-y-2">
+            <label className="text-xs font-bold uppercase tracking-wider text-slate-500">
+              Category
+            </label>
+            <div className="relative">
+              <Grid className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400 pointer-events-none" />
+              <select
+                name="category"
+                defaultValue={category || ""}
+                className="w-full h-11 rounded-xl bg-slate-50 border border-slate-200 pl-10 pr-4 text-sm text-slate-700 focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-blue-500 transition-all cursor-pointer appearance-none"
+              >
+                <option value="">All Categories</option>
+                {categories.map((cat) => (
+                  <option key={cat} value={cat}>
+                    {cat}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* Location */}
           <div className="space-y-2">
             <label className="text-xs font-bold uppercase tracking-wider text-slate-500">
               Location
@@ -82,7 +110,7 @@ export function MobileFilterSheet({
             >
               Apply Filters
             </Button>
-            {(service || location) && (
+            {(service || category || location) && (
               <Link href="/services" onClick={() => setOpen(false)} className="w-full">
                 <Button
                   type="button"

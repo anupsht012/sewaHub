@@ -1,12 +1,12 @@
 import { Sparkles, Command } from "lucide-react";
 
 export default function Loader({
-  text = "Preparing KaamSewa...",
+  text = "Please wait...",
 }: {
   text?: string;
 }) {
   return (
-    <div className="relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden bg-slate-950 p-6">
+    <div className="relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden p-6">
       {/* Dynamic Radial Mesh Background */}
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(59,130,246,0.15),transparent_60%)]" />
       <div className="pointer-events-none absolute h-[500px] w-[500px] animate-pulse rounded-full bg-indigo-500/10 blur-[120px]" />
@@ -39,7 +39,7 @@ export default function Loader({
           </div>
 
           {/* Custom Loading Message */}
-          <p className="text-lg font-bold tracking-wide text-slate-100">
+          <p className="text-lg font-bold tracking-wide text-slate-900">
             {text}
           </p>
 

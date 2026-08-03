@@ -53,6 +53,11 @@ const links = [
     name: "Payments",
     href: "/admin/payments",
     icon: DollarSign,
+  },
+  {
+    name: "Profile",
+    href: "/admin/profile",
+    icon: Users,
   }
  
 ];

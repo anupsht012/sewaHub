@@ -17,12 +17,14 @@ import {
   SlidersHorizontal,
   X,
   Sparkles,
+  Grid,
 } from "lucide-react";
 import { MobileFilterSheet } from "@/components/shared/MobileFilterSheet";
 
 interface PageProps {
   searchParams: Promise<{
     service?: string;
+    category?: string;
     location?: string;
     sortBy?: string;
     page?: string;
@@ -34,6 +36,7 @@ const ITEMS_PER_PAGE = 9;
 export default async function ServicesPage({ searchParams }: PageProps) {
   const {
     service = "",
+    category = "",
     location = "",
     sortBy = "newest",
     page = "1",
@@ -47,6 +50,23 @@ export default async function ServicesPage({ searchParams }: PageProps) {
   if (sortBy === "price_asc") orderBy = { price: "asc" };
   if (sortBy === "price_desc") orderBy = { price: "desc" };
 
+  // Fetch dynamic categories from DB
+  const categoriesRaw = await prisma.service.findMany({
+    select: {
+      category: true,
+    },
+    distinct: ["category"],
+    where: {
+      category: {
+        not: undefined,
+      },
+    },
+  });
+
+  const SERVICE_CATEGORIES = categoriesRaw
+    .map((item) => item.category)
+    .filter((cat): cat is string => Boolean(cat));
+
   // Fetch total matching services for pagination
   const totalServices = await prisma.service.count({
     where: {
@@ -55,6 +75,14 @@ export default async function ServicesPage({ searchParams }: PageProps) {
           ? {
               name: {
                 contains: service,
+                mode: "insensitive",
+              },
+            }
+          : {},
+        category
+          ? {
+              category: {
+                equals: category,
                 mode: "insensitive",
               },
             }
@@ -79,6 +107,12 @@ export default async function ServicesPage({ searchParams }: PageProps) {
       ...(service && {
         name: {
           contains: service,
+          mode: "insensitive",
+        },
+      }),
+      ...(category && {
+        category: {
+          equals: category,
           mode: "insensitive",
         },
       }),
@@ -109,9 +143,10 @@ export default async function ServicesPage({ searchParams }: PageProps) {
   // Desktop Sidebar Filter Form
   const FilterSidebar = () => (
     <form method="GET" className="space-y-6">
+      {/* Service Keyword Search */}
       <div className="space-y-2">
         <label className="text-xs font-bold uppercase tracking-wider text-slate-500">
-          Service Type
+          Service Keyword
         </label>
         <div className="relative">
           <Search className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400" />
@@ -124,6 +159,29 @@ export default async function ServicesPage({ searchParams }: PageProps) {
         </div>
       </div>
 
+      {/* Dynamic Service Category Select Dropdown */}
+      <div className="space-y-2">
+        <label className="text-xs font-bold uppercase tracking-wider text-slate-500">
+          Category
+        </label>
+        <div className="relative">
+          <Grid className="absolute left-3.5 top-3.5 h-4 w-4 text-slate-400 pointer-events-none" />
+          <select
+            name="category"
+            defaultValue={category}
+            className="w-full h-11 rounded-xl bg-slate-50/80 border border-slate-200 pl-10 pr-4 text-sm text-slate-700 focus:bg-white focus:outline-hidden focus:ring-2 focus:ring-blue-500 transition-all cursor-pointer appearance-none"
+          >
+            <option value="">All Categories</option>
+            {SERVICE_CATEGORIES.map((cat) => (
+              <option key={cat} value={cat}>
+                {cat}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      {/* Location Filter */}
       <div className="space-y-2">
         <label className="text-xs font-bold uppercase tracking-wider text-slate-500">
           Location
@@ -149,7 +207,7 @@ export default async function ServicesPage({ searchParams }: PageProps) {
           Apply Filters
         </Button>
 
-        {(service || location) && (
+        {(service || category || location) && (
           <Link href="/services" className="block">
             <Button
               type="button"
@@ -177,7 +235,7 @@ export default async function ServicesPage({ searchParams }: PageProps) {
                 </span>
               </div>
               <h1 className="text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
-                {service || location ? "Search Results" : "Explore Top Services"}
+                {service || category || location ? "Search Results" : "Explore Top Services"}
               </h1>
               <p className="mt-1 text-sm text-slate-500">
                 Book verified professionals and trusted local service providers across Nepal.
@@ -190,14 +248,17 @@ export default async function ServicesPage({ searchParams }: PageProps) {
               <div className="lg:hidden">
                 <MobileFilterSheet
                   service={service}
+                  category={category}
                   location={location}
                   sortBy={sortBy}
+                  categories={SERVICE_CATEGORIES}
                 />
               </div>
 
               {/* Sort Selector Form */}
               <form method="GET" className="flex items-center gap-2">
                 {service && <input type="hidden" name="service" value={service} />}
+                {category && <input type="hidden" name="category" value={category} />}
                 {location && <input type="hidden" name="location" value={location} />}
                 
                 <div className="flex items-center rounded-xl border border-slate-200 bg-white px-3.5 py-2 shadow-2xs focus-within:ring-2 focus-within:ring-blue-500">
@@ -237,7 +298,7 @@ export default async function ServicesPage({ searchParams }: PageProps) {
                 <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
                   <SlidersHorizontal className="h-4 w-4 text-blue-600" /> Filter
                 </h2>
-                {(service || location) && (
+                {(service || category || location) && (
                   <Badge variant="outline" className="text-[10px] text-blue-600 border-blue-200 bg-blue-50">
                     Active Filters
                   </Badge>
@@ -251,13 +312,19 @@ export default async function ServicesPage({ searchParams }: PageProps) {
           <main className="lg:col-span-3">
             
             {/* Active Filters Display Chips */}
-            {(service || location) && (
+            {(service || category || location) && (
               <div className="mb-6 flex flex-wrap items-center gap-2 rounded-xl border border-blue-100 bg-blue-50/50 p-3">
                 <span className="text-xs font-medium text-slate-500 mr-1">Active:</span>
                 
                 {service && (
                   <Badge variant="secondary" className="rounded-lg bg-white text-blue-700 border border-blue-200 px-2.5 py-1 text-xs shadow-2xs flex items-center gap-1.5">
                     Service: <span className="font-bold">{service}</span>
+                  </Badge>
+                )}
+
+                {category && (
+                  <Badge variant="secondary" className="rounded-lg bg-white text-blue-700 border border-blue-200 px-2.5 py-1 text-xs shadow-2xs flex items-center gap-1.5">
+                    Category: <span className="font-bold">{category}</span>
                   </Badge>
                 )}
 
@@ -317,9 +384,16 @@ export default async function ServicesPage({ searchParams }: PageProps) {
                           
                           {/* Top Title & Price Tag */}
                           <div className="flex items-start justify-between gap-3">
-                            <h2 className="text-base font-bold text-slate-900 line-clamp-1 group-hover:text-blue-600 transition-colors">
-                              {serv.name}
-                            </h2>
+                            <div>
+                              <h2 className="text-base font-bold text-slate-900 line-clamp-1 group-hover:text-blue-600 transition-colors">
+                                {serv.name}
+                              </h2>
+                              {serv.category && (
+                                <span className="inline-block mt-1 rounded-md bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-600">
+                                  {serv.category}
+                                </span>
+                              )}
+                            </div>
                             <span className="shrink-0 rounded-full bg-slate-900 px-3 py-1 text-xs font-bold text-white shadow-2xs">
                               Rs. {serv.price}
                             </span>
@@ -404,6 +478,7 @@ export default async function ServicesPage({ searchParams }: PageProps) {
                           pathname: "/services",
                           query: {
                             ...(service ? { service } : {}),
+                            ...(category ? { category } : {}),
                             ...(location ? { location } : {}),
                             ...(sortBy ? { sortBy } : {}),
                             page: currentPage - 1,
@@ -426,6 +501,7 @@ export default async function ServicesPage({ searchParams }: PageProps) {
                           pathname: "/services",
                           query: {
                             ...(service ? { service } : {}),
+                            ...(category ? { category } : {}),
                             ...(location ? { location } : {}),
                             ...(sortBy ? { sortBy } : {}),
                             page: currentPage + 1,

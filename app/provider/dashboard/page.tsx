@@ -193,7 +193,7 @@ export default async function ProviderDashboardPage() {
             <CardTitle className="text-lg font-bold text-slate-900 flex items-center gap-2">
               <Package className="h-5 w-5 text-blue-600" /> My Services
             </CardTitle>
-            <AddServiceModal />
+            <AddServiceModal providerCategory={provider.category ?? undefined } />
           </CardHeader>
           <CardContent className="p-0">
             {provider.services.length === 0 ? (
@@ -209,6 +209,7 @@ export default async function ProviderDashboardPage() {
                     <TableRow className="border-b border-slate-100">
                       <TableHead className="font-semibold text-slate-700 text-xs">Service</TableHead>
                       <TableHead className="font-semibold text-slate-700 text-xs">Description</TableHead>
+                      <TableHead className="font-semibold text-slate-700 text-xs">Category</TableHead>
                       <TableHead className="font-semibold text-slate-700 text-xs">Price</TableHead>
                       <TableHead className="text-right font-semibold text-slate-700 text-xs">Actions</TableHead>
                     </TableRow>
@@ -221,6 +222,9 @@ export default async function ProviderDashboardPage() {
                         </TableCell>
                         <TableCell className="max-w-xs truncate text-xs text-slate-600">
                           {service.description || "No description"}
+                        </TableCell>
+                          <TableCell className="max-w-xs truncate text-xs text-slate-600">
+                          {service.category || "No category"}
                         </TableCell>
                         <TableCell className="font-extrabold text-blue-600 text-xs sm:text-sm">
                           Rs. {service.price}
