@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { BookingStatus, PaymentStatus } from "@/lib/generated/prisma/enums";
+import { BookingStatus, PaymentStatus } from "@/lib/generated/prisma";
 
 export async function GET(req: Request) {
     try {
