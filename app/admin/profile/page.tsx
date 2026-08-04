@@ -34,7 +34,7 @@ export default async function AdminProfilePage() {
 
         include: {
 
-            addresses: true,
+            address: true,
 
             notifications: {
                 orderBy: {

@@ -164,7 +164,7 @@ export default async function AdminServicesPage({
                                 <Button
                                   size="sm"
                                   variant="outline"
-                                  className="h-8 border-slate-200 bg-white font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900"
+                                  className="h-8 border-slate-200 bg-white font-medium cursor-pointer text-slate-700 hover:bg-slate-50 hover:text-slate-900"
                                 >
                                   <Eye className="mr-1.5 h-3.5 w-3.5 text-slate-500" />
                                   View

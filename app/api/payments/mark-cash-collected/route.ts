@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth/get-user";
-import { PaymentStatus } from "@/lib/generated/prisma/enums";
+import { PaymentStatus } from "@/lib/generated/prisma";
 
 export async function PATCH(req: Request) {
   try {

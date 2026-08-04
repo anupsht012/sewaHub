@@ -68,7 +68,15 @@ export default function Footer() {
             >
 
               <div>
-                <Image src={LOGO} alt="KaamSewa Logo" width={150} height={150} />
+                <Image
+                  src={LOGO}
+                  alt="KaamSewa Logo"
+                  width={150}
+                  height={150}
+                  style={{
+                    height: "auto",
+                  }}
+                />
               </div>
 
 

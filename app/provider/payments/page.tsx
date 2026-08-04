@@ -19,7 +19,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import MarkCashPaidButton from "@/components/provider/mark-cash-paid-button";
-import { PaymentStatus } from "@/lib/generated/prisma/enums";
+import { PaymentStatus } from "@/lib/generated/prisma";
 
 interface ProviderPaymentsPageProps {
   searchParams: Promise<{

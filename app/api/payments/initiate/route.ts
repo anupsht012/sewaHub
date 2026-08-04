@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { PaymentMethod, PaymentStatus } from "@/lib/generated/prisma/enums";
 import { getCurrentUser } from "@/lib/auth/get-user";
 import crypto from "crypto";
+import { PaymentMethod, PaymentStatus } from "@/lib/generated/prisma";
 
 export async function POST(req: NextRequest) {
   try {

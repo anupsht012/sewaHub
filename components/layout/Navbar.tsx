@@ -179,9 +179,18 @@ px-4
           className="flex items-center gap-2"
         >
 
-<div>
-  <Image src={LOGO} alt="KaamSewa Logo" width={90} height={90} />
-</div>
+          <div>
+            <Image
+              src={LOGO}
+              alt="KaamSewa Logo"
+              width={90}
+              height={90}
+              style={{
+                width: "90px",
+                height: "auto",
+              }}
+            />
+          </div>
 
 
         </Link>
@@ -361,12 +370,12 @@ hover:bg-gray-100
 
 
 
-              <NotificationBell  />
-              <Button className="flex cursor-pointer items-center gap-2 rounded-lg bg-red-600 px-2 py-2 text-white hover:bg-red-700 transition-colors" 
-              onClick={handleLogout}
+              <NotificationBell />
+              <Button className="flex cursor-pointer items-center gap-2 rounded-lg bg-red-600 px-2 py-2 text-white hover:bg-red-700 transition-colors"
+                onClick={handleLogout}
                 disabled={loggingOut}>
-      <LogOut size={20} />
-    </Button>
+                <LogOut size={20} />
+              </Button>
 
 
             </>

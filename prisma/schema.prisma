@@ -1,5 +1,5 @@
 generator client {
-  provider = "prisma-client"
+  provider = "prisma-client-js"
   output   = "../lib/generated/prisma"
 }
 
@@ -12,13 +12,13 @@ datasource db {
 // ==========================================
 
 model User {
-  id            String  @id @default(cuid())
+  id            String    @id @default(cuid())
   name          String
-  email         String  @unique
-  emailVerified Boolean @default(false)
+  email         String    @unique
+  emailVerified Boolean   @default(false)
   image         String?
   password      String?
-  role          Role    @default(CUSTOMER)
+  role          Role      @default(CUSTOMER)
 
   // Profile
   phone         String?
@@ -27,28 +27,22 @@ model User {
   dateOfBirth   DateTime?
   bio           String?
 
-  // Address
-  province String?
-  district String?
-  city     String?
-  address  String?
-
   // Emergency Contact
   emergencyName         String?
   emergencyPhone        String?
   emergencyRelationship String?
 
+  // Relations
   accounts             Account[]
   sessions             Session[]
-  addresses            Address[]
+  address              Address?
   provider             Provider?
   bookings             Booking[]             @relation("CustomerBookings")
   reviews              Review[]
   serviceRequests      ServiceRequest[]
   providerApplications ProviderApplication[]
-
-  payments      Payment[]
-  notifications Notification[]
+  payments             Payment[]
+  notifications        Notification[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -57,9 +51,8 @@ model User {
 model Address {
   id String @id @default(cuid())
 
-  userId String
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   label String?
   // Example:
@@ -68,21 +61,15 @@ model Address {
   // Shop
 
   province String
-
   district String
-
-  city String
-
-  area String?
-
-  street String?
-
+  city     String
+  area     String?
+  street   String?
   landmark String?
 
   isDefault Boolean @default(false)
 
   createdAt DateTime @default(now())
-
   updatedAt DateTime @updatedAt
 }
 
@@ -136,10 +123,8 @@ model Verification {
   id String @id @default(cuid())
 
   identifier String
-
-  value String
-
-  expiresAt DateTime
+  value      String
+  expiresAt  DateTime
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -155,21 +140,15 @@ model Provider {
   userId String @unique
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  bio String?
-
+  bio      String?
   category String?
-
   location String
-
   verified Boolean @default(false)
 
-  services Service[]
-
-  offers ProviderOffer[]
-
+  services        Service[]
+  offers          ProviderOffer[]
   serviceRequests ServiceRequest[]
-
-  locationDetail Location?
+  locationDetail  Location?
 
   createdAt DateTime @default(now())
 }
@@ -177,20 +156,16 @@ model Provider {
 model Service {
   id String @id @default(cuid())
 
-  name String
-
-  category String?
-
+  name        String
+  category    String?
   description String?
-
-  price Float
+  price       Float
 
   providerId String
   provider   Provider @relation(fields: [providerId], references: [id], onDelete: Cascade)
 
   bookings Booking[]
-
-  reviews Review[]
+  reviews  Review[]
 
   createdAt DateTime @default(now())
 }
@@ -209,29 +184,23 @@ model Booking {
   service   Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
 
   bookingDate DateTime
+  phone       String
+  address     String
+  note        String?
 
-  phone String
-
-  address String
-
-  note String?
-
-  status BookingStatus @default(PENDING)
-
+  status        BookingStatus @default(PENDING)
   paymentStatus PaymentStatus @default(PENDING)
 
   payment Payment?
 
   createdAt DateTime @default(now())
-
   updatedAt DateTime @updatedAt
 }
 
 model Review {
   id String @id @default(cuid())
 
-  rating Int
-
+  rating  Int
   comment String?
 
   customerId String
@@ -260,16 +229,11 @@ model ServiceRequest {
   providerId String?
   provider   Provider? @relation(fields: [providerId], references: [id], onDelete: Cascade)
 
-  title String
-
-  description String
-
-  location String
-
-  phone String
-
-  budget Float?
-
+  title         String
+  description   String
+  location      String
+  phone         String
+  budget        Float?
   preferredDate DateTime?
 
   status RequestStatus @default(OPEN)
@@ -277,7 +241,6 @@ model ServiceRequest {
   offers ProviderOffer[]
 
   createdAt DateTime @default(now())
-
   updatedAt DateTime @updatedAt
 }
 
@@ -290,10 +253,8 @@ model ProviderOffer {
   providerId String
   provider   Provider @relation(fields: [providerId], references: [id], onDelete: Cascade)
 
-  price Float
-
-  message String?
-
+  price         Float
+  message       String?
   estimatedTime String?
 
   status OfferStatus @default(PENDING)
@@ -308,31 +269,23 @@ model ProviderApplication {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   businessName String
-
-  category String
-
-  description String
-
-  location String
-
-  phone String
+  category     String
+  description  String
+  location     String
+  phone        String
 
   status ApplicationStatus @default(PENDING)
 
   createdAt DateTime @default(now())
-
   updatedAt DateTime @updatedAt
 }
 
 model ContactMessage {
   id String @id @default(cuid())
 
-  name String
-
-  email String
-
+  name    String
+  email   String
   subject String
-
   message String
 
   createdAt DateTime @default(now())
@@ -348,23 +301,19 @@ model Payment {
   bookingId String  @unique
   booking   Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
 
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+
   amount Float
-
   method PaymentMethod
-
   status PaymentStatus @default(PENDING)
 
-  transactionUuid String @unique
-
-  pidx String? @unique
-
-  refId String?
+  transactionUuid String  @unique
+  pidx            String? @unique
+  refId           String?
 
   createdAt DateTime @default(now())
-
   updatedAt DateTime @updatedAt
-  user      User?    @relation(fields: [userId], references: [id])
-  userId    String?
 }
 
 model Notification {
@@ -373,15 +322,12 @@ model Notification {
   userId String
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  title String
-
+  title   String
   message String
-
-  type NotificationType
+  type    NotificationType
 
   isRead Boolean @default(false)
-
-  link String?
+  link   String?
 
   createdAt DateTime @default(now())
 
@@ -394,22 +340,15 @@ model Location {
   providerId String?   @unique
   provider   Provider? @relation(fields: [providerId], references: [id], onDelete: Cascade)
 
-  district String
-
+  district     String
   municipality String
-
-  ward Int?
-
-  city String?
-
-  addressLine String?
-
-  latitude Float?
-
-  longitude Float?
+  ward         Int?
+  city         String?
+  addressLine  String?
+  latitude     Float?
+  longitude    Float?
 
   createdAt DateTime @default(now())
-
   updatedAt DateTime @updatedAt
 
   @@index([district, municipality])

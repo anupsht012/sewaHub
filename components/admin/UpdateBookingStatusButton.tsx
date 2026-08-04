@@ -109,7 +109,7 @@ export default function UpdateBookingStatusButton({
             <Button
               disabled={pending}
               onClick={()=>updateStatus("ACCEPTED")}
-              className="bg-green-600 hover:bg-green-700"
+              className="bg-green-600 hover:bg-green-700 cursor-pointer"
             >
               Accept
             </Button>
@@ -119,6 +119,7 @@ export default function UpdateBookingStatusButton({
               disabled={pending}
               onClick={()=>updateStatus("REJECTED")}
               variant="destructive"
+              className="cursor-pointer"
             >
               Reject
             </Button>
@@ -157,6 +158,7 @@ export default function UpdateBookingStatusButton({
             disabled={pending}
             variant="outline"
             onClick={()=>updateStatus("CANCELLED")}
+            className="cursor-pointer"
           >
             Cancel
           </Button>

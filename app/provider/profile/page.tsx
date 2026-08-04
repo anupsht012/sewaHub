@@ -27,65 +27,35 @@ export default async function ProviderProfilePage() {
 
 
     const user = await prisma.user.findUnique({
+  where: {
+    id: sessionUser.id,
+  },
 
-        where: {
-            id: sessionUser.id
-        },
+  include: {
+    address: true,
 
-
-        include: {
-
-            addresses: true,
-
-
-            provider: {
-
-                include: {
-
-
-                    services: {
-
-                        include: {
-
-                            bookings: {
-
-                                include: {
-
-                                    service: true
-
-                                }
-
-                            }
-
-                        }
-
-                    },
-
-
-                    // reviews: true
-
-
-                }
-
+    provider: {
+      include: {
+        services: {
+          include: {
+            bookings: {
+              include: {
+                service: true,
+              },
             },
+          },
+        },
+      },
+    },
 
-
-            notifications: {
-
-                orderBy: {
-
-                    createdAt: "desc"
-
-                },
-
-                take: 10
-
-            }
-
-
-        }
-
-    });
+    notifications: {
+      orderBy: {
+        createdAt: "desc",
+      },
+      take: 10,
+    },
+  },
+});
 
 
 

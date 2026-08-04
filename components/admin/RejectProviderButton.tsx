@@ -44,6 +44,7 @@ export default function RejectProviderButton({
       variant="destructive"
       onClick={handleReject}
       disabled={pending}
+      className="cursor-pointer"
     >
       {pending ? "Rejecting..." : "Reject"}
     </Button>

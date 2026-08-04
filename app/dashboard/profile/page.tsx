@@ -30,7 +30,7 @@ export default async function CustomerProfilePage() {
     },
 
     include: {
-      addresses: true,
+      address: true,
       
       bookings: true,
 
