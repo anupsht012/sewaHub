@@ -11,6 +11,7 @@ import {
   UserPlus,
   TrendingUp,
   DollarSign,
+  Stars,
 } from "lucide-react";
 
 const links = [
@@ -48,6 +49,11 @@ const links = [
     name: "Provider Requests",
     href: "/admin/provider-applications",
     icon: UserPlus,
+  },
+  {
+name: "Reviews",
+    href: "/admin/reviews",
+    icon: Stars,
   },
   {
     name: "Payments",
