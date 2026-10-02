@@ -1,188 +1,104 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth/get-user";
+import { writeFile, mkdir, unlink } from "fs/promises";
+import path from "path";
+import { randomUUID } from "crypto";
+import fs from "fs";
 
-
-export async function PATCH(
-    req: Request,
-    { params }: { params: Promise<{ id: string }> }
+export async function GET(
+  _req: Request,
+  { params }: { params: Promise<{ id: string }> }
 ) {
-
-    try {
-
-        const user = await getCurrentUser();
-
-
-        if (!user) {
-            return NextResponse.json(
-                { error: "Unauthorized" },
-                { status: 401 }
-            );
-        }
-
-
-        const { id } = await params;
-
-
-        const { name, description, price } = await req.json();
-
-
-
-        const provider = await prisma.provider.findUnique({
-            where: {
-                userId: user.id,
-            },
-        });
-
-
-        if (!provider) {
-            return NextResponse.json(
-                { error: "Provider not found" },
-                { status: 404 }
-            );
-        }
-
-
-
-        const service = await prisma.service.findFirst({
-            where: {
-                id,
-                providerId: provider.id,
-            },
-        });
-
-
-
-        if (!service) {
-            return NextResponse.json(
-                { error: "Service not found" },
-                { status: 404 }
-            );
-        }
-
-
-
-        const updated = await prisma.service.update({
-            where: {
-                id,
-            },
-            data: {
-                name,
-                description,
-                price: Number(price),
-            },
-        });
-
-
-
-        return NextResponse.json(updated);
-
-
-    } catch (error) {
-
-        console.error("UPDATE SERVICE ERROR:", error);
-
-        return NextResponse.json(
-            { error: "Update failed" },
-            { status: 500 }
-        );
-
-    }
-
+  const { id } = await params;
+  const service = await prisma.service.findUnique({ where: { id } });
+  if (!service) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  return NextResponse.json(service);
 }
 
-
-
-
-
-export async function DELETE(
-    req: Request,
-    { params }: { params: Promise<{ id: string }> }
+export async function PATCH(
+  req: Request,
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  try {
+    const user = await getCurrentUser();
+    if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
+    const { id } = await params;
 
-    try {
-
-
-        const user = await getCurrentUser();
-
-
-        if (!user) {
-            return NextResponse.json(
-                { error: "Unauthorized" },
-                { status: 401 }
-            );
-        }
-
-
-
-        const { id } = await params;
-
-
-
-        const provider = await prisma.provider.findUnique({
-            where: {
-                userId: user.id,
-            },
-        });
-
-
-
-        if (!provider) {
-            return NextResponse.json(
-                { error: "Provider not found" },
-                { status: 404 }
-            );
-        }
-
-
-
-        const service = await prisma.service.findFirst({
-            where: {
-                id,
-                providerId: provider.id,
-            },
-        });
-
-
-
-        if (!service) {
-            return NextResponse.json(
-                { error: "Service not found" },
-                { status: 404 }
-            );
-        }
-
-
-
-        await prisma.service.delete({
-            where: {
-                id,
-            },
-        });
-
-
-
-        return NextResponse.json({
-            success: true,
-        });
-
-
-
-    } catch (error) {
-
-        console.error("DELETE SERVICE ERROR:", error);
-
-
-        return NextResponse.json(
-            {
-                error: "Delete failed",
-            },
-            {
-                status: 500,
-            }
-        );
-
+    const provider = await prisma.provider.findUnique({
+      where: { userId: user.id },
+    });
+    if (!provider) {
+      return NextResponse.json({ error: "Provider profile not found" }, { status: 404 });
     }
 
+    const existing = await prisma.service.findFirst({
+      where: { id, providerId: provider.id },
+    });
+    if (!existing) {
+      return NextResponse.json({ error: "Service not found for this provider" }, { status: 404 });
+    }
+
+    const formData = await req.formData();
+    const name = formData.get("name") as string;
+    const description = formData.get("description") as string;
+    const price = formData.get("price") as string;
+    const imageFile = formData.get("image") as File | null;
+    const removeImage = formData.get("removeImage") as string;
+
+    let imageUrl: string | null | undefined = undefined;
+
+    if (removeImage === "true") {
+      imageUrl = null;
+      // delete old file if exists
+      if (existing.image) {
+        const oldPath = path.join(process.cwd(), "public", existing.image);
+        if (fs.existsSync(oldPath)) await unlink(oldPath).catch(()=>{});
+      }
+    }
+
+    if (imageFile && imageFile.size > 0) {
+      const buffer = Buffer.from(await imageFile.arrayBuffer());
+      const ext = path.extname(imageFile.name) || ".jpg";
+      const filename = `${randomUUID()}${ext}`;
+      const uploadDir = path.join(process.cwd(), "public", "uploads", "services");
+      await mkdir(uploadDir, { recursive: true });
+      await writeFile(path.join(uploadDir, filename), buffer);
+      imageUrl = `/uploads/services/${filename}`;
+    }
+
+    const updated = await prisma.service.update({
+      where: { id },
+      data: {
+        ...(name ? { name: name.trim() } : {}),
+        ...(description !== undefined ? { description: description.trim() || null } : {}),
+        ...(price ? { price: parseFloat(price) } : {}),
+        ...(imageUrl !== undefined ? { image: imageUrl } : {}),
+      },
+    });
+
+    return NextResponse.json(updated);
+  } catch (e: any) {
+    console.error("PATCH ERROR:", e);
+    return NextResponse.json({ error: e.message }, { status: 500 });
+  }
+}
+
+export async function DELETE(
+  _req: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const user = await getCurrentUser();
+    if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const { id } = await params;
+    const provider = await prisma.provider.findUnique({ where: { userId: user.id } });
+    if (!provider) return NextResponse.json({ error: "Provider not found" }, { status: 404 });
+    
+    await prisma.service.delete({ where: { id, providerId: provider.id } });
+    return NextResponse.json({ success: true });
+  } catch (e: any) {
+    return NextResponse.json({ error: e.message }, { status: 500 });
+  }
 }

@@ -118,37 +118,54 @@
 }
 
 @layer base {
-  * {
+    * {
     @apply border-border outline-ring/50;
+    -webkit-tap-highlight-color: transparent;
   }
-  
+
   html {
     @apply font-sans text-sm sm:text-base antialiased scroll-smooth;
+    text-rendering: optimizeLegibility;
   }
 
   body {
-    @apply bg-background text-foreground min-h-screen overflow-x-hidden text-slate-900 dark:text-slate-100;
+    @apply bg-background text-foreground min-h-screen text-slate-900 dark:text-slate-100;
+    /* REMOVED overflow-x-hidden - it breaks sticky nav */
   }
 
-  /* Responsive Headings Scaling */
-  h1 {
-    @apply text-2xl font-bold tracking-tight sm:text-3xl lg:text-4xl;
+  /* Performance: images don't cause layout shift */
+  img, video {
+    @apply max-w-full h-auto;
   }
-  h2 {
-    @apply text-xl font-semibold tracking-tight sm:text-2xl lg:text-3xl;
-  }
-  h3 {
-    @apply text-lg font-semibold sm:text-xl lg:text-2xl;
+
+  h1 { @apply text-2xl font-bold tracking-tight sm:text-3xl lg:text-4xl; }
+  h2 { @apply text-xl font-semibold tracking-tight sm:text-2xl lg:text-3xl; }
+  h3 { @apply text-lg font-semibold sm:text-xl lg:text-2xl; }
+
+  /* User-friendly focus */
+  :focus-visible {
+    @apply outline-none ring-2 ring-ring ring-offset-2;
   }
 }
 
 @layer utilities {
-  /* Helper to hide scrollbars for horizontal navigation on mobile */
-  .no-scrollbar::-webkit-scrollbar {
-    display: none;
-  }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
   .no-scrollbar {
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+
+  /* New: smooth press effect for buttons on mobile */
+  .tap-active:active {
+    transform: scale(0.98);
+  }
+}
+
+/* Respect user who prefers less animation - faster on low-end phones */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+  html { scroll-behavior: auto ; }
 }

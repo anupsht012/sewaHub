@@ -1,15 +1,15 @@
 import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import { getCurrentUser } from "@/lib/auth/get-user";
 
 export async function PATCH() {
-  try {
-    // TODO: Update all notifications for current user in database
-    // e.g., await db.notification.updateMany({ where: { userId, isRead: false }, data: { isRead: true } });
+  const user = await getCurrentUser();
+  if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    return NextResponse.json({ success: true });
-  } catch (error) {
-    return NextResponse.json(
-      { message: "Failed to mark all as read" },
-      { status: 500 }
-    );
-  }
+  await prisma.notification.updateMany({
+    where: { userId: user.id, isRead: false },
+    data: { isRead: true },
+  });
+  return NextResponse.json({ success: true });
 }
+export async function POST(){ return PATCH(); }

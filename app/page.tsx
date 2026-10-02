@@ -9,22 +9,26 @@ import { getCurrentUser } from "@/lib/auth/get-user";
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
+  const currentUser = await getCurrentUser();
 
-  const user = await getCurrentUser();
+  // Normalize to what components need - fixes null vs undefined issue
+  const user = currentUser
+   ? {
+        id: currentUser.id,
+        name: currentUser.name,
+        email: currentUser.email,
+        role: currentUser.role?? undefined, // null -> undefined
+      }
+    : null;
 
   return (
-    <div className="overflow-hidden">
+    <div className="overflow-hidden bg-white">
       <Hero />
-
       <Categories />
-
       <FeaturedProviders />
-
       <HowItWorks user={user} />
-
       <Testimonials />
-
-      <CTA />
+      <CTA user={user} />
     </div>
   );
 }

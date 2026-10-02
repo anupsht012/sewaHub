@@ -13,8 +13,8 @@ export default function NotificationBell() {
     const res = await fetch("/api/notifications");
     const data = await res.json();
 
-    setNotifications(data.notifications);
-    setUnread(data.unread);
+    setNotifications(data.notifications ?? []);
+    setUnread(data.unread ?? 0);
   };
 
   useEffect(() => {

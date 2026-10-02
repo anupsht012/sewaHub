@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Eye, EyeOff } from "lucide-react";
@@ -10,8 +10,9 @@ import { toast } from "sonner";
 import Link from "next/link";
 
 export default function RegisterPage() {
-
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl");
 
   const [form, setForm] = useState({
     name: "",
@@ -20,190 +21,118 @@ export default function RegisterPage() {
     role: "CUSTOMER",
   });
 
-
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-
     setLoading(true);
 
-    const { data, error } = await authClient.signUp.email({
+    const { error } = await authClient.signUp.email({
       name: form.name,
       email: form.email,
       password: form.password,
     });
 
-    setLoading(false);
-
     if (error) {
-      console.log("BETTER AUTH ERROR:", error);
-      toast.error(JSON.stringify(error));
+      setLoading(false);
+      toast.error(error.message || "Registration failed");
       return;
     }
 
-    toast.success("Account created successfully!");
+    // Update role
+    try {
+      await fetch("/api/user/update-role", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ role: form.role }),
+      });
+    } catch (err) {
+      console.error("ROLE UPDATE FAILED", err);
+    }
 
-    await fetch("/api/user/update-role", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        role: form.role,
-      }),
-    });
+    toast.success("Account created! Please login.");
+    setLoading(false);
 
-    router.push("/login");
+    // Preserve callbackUrl to login
+    if (callbackUrl) {
+      router.push(`/login?callbackUrl=${encodeURIComponent(callbackUrl)}`);
+    } else {
+      router.push("/login");
+    }
   }
 
-
-
   return (
-
     <div className="flex min-h-screen items-center justify-center bg-gray-50 px-6">
-
       <div className="w-full max-w-md rounded-3xl bg-white p-8 shadow-lg">
+        <h1 className="text-3xl font-bold">Create Account</h1>
+        <p className="mt-2 text-gray-500">Join KaamSewa Nepal today.</p>
 
+        {callbackUrl && callbackUrl.startsWith("/services/") && (
+          <div className="mt-4 rounded-xl bg-blue-50 border border-blue-100 p-3 text-xs text-blue-700">
+            Create account to continue booking this service
+          </div>
+        )}
 
-        <h1 className="text-3xl font-bold">
-          Create Account
-        </h1>
-
-
-        <p className="mt-2 text-gray-500">
-          Join KaamSewa Nepal today.
-        </p>
-
-
-
-        <form
-          onSubmit={handleSubmit}
-          className="mt-8 space-y-4"
-        >
-
-
+        <form onSubmit={handleSubmit} className="mt-8 space-y-4">
           <Input
             placeholder="Full Name"
             value={form.name}
-            onChange={(e) =>
-              setForm({
-                ...form,
-                name: e.target.value,
-              })
-            }
+            onChange={(e) => setForm({ ...form, name: e.target.value })}
+            required
+            minLength={2}
           />
-
-
 
           <Input
             type="email"
             placeholder="Email"
             value={form.email}
-            onChange={(e) =>
-              setForm({
-                ...form,
-                email: e.target.value,
-              })
-            }
+            onChange={(e) => setForm({ ...form, email: e.target.value })}
+            required
           />
 
-
-
           <div className="relative">
-
             <Input
               type={showPassword ? "text" : "password"}
-              placeholder="Password"
+              placeholder="Password (min 8 chars)"
               value={form.password}
-              onChange={(e) =>
-                setForm({
-                  ...form,
-                  password: e.target.value,
-                })
-              }
+              onChange={(e) => setForm({ ...form, password: e.target.value })}
+              required
+              minLength={8}
             />
-
-
             <button
               type="button"
-              className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-gray-500"
-              onClick={() =>
-                setShowPassword(!showPassword)
-              }
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+              onClick={() => setShowPassword(!showPassword)}
             >
-
-              {showPassword ? (
-                <EyeOff size={20} />
-              ) : (
-                <Eye size={20} />
-              )}
-
+              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
             </button>
-
-
           </div>
 
-
-
-
           <select
-            className="w-full rounded-md border p-2 cursor-pointer"
+            className="w-full rounded-xl border border-slate-200 h-11 px-3 text-sm cursor-pointer bg-white"
             value={form.role}
-            onChange={(e) =>
-              setForm({
-                ...form,
-                role: e.target.value,
-              })
-            }
+            onChange={(e) => setForm({ ...form, role: e.target.value })}
           >
-
-            <option value="CUSTOMER">
-              Customer
-            </option>
-
-
-            <option value="PROVIDER">
-              Service Provider
-            </option>
-
-
+            <option value="CUSTOMER">Customer - I need services</option>
+            <option value="PROVIDER">Service Provider - I offer services</option>
           </select>
 
-
-
-
-          <Button
-            type="submit"
-            className="w-full cursor-pointer"
-            disabled={loading}
-          >
-
-            {loading
-              ? "Creating..."
-              : "Create Account"}
-
+          <Button type="submit" className="w-full h-11 rounded-xl" disabled={loading}>
+            {loading ? "Creating..." : "Create Account"}
           </Button>
 
-          <div>
+          <div className="text-center text-sm text-gray-500">
             Already have an account?{" "}
             <Link
-              href="/login"
-               className="font-medium text-blue-600 hover:underline"
+              href={callbackUrl ? `/login?callbackUrl=${encodeURIComponent(callbackUrl)}` : "/login"}
+              className="font-medium text-blue-600 hover:underline"
             >
               Login here
             </Link>
-
           </div>
-
         </form>
-
-
       </div>
-
     </div>
-
   );
 }
