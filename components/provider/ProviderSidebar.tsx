@@ -25,6 +25,7 @@ const links = [
   { name: "Offers", href: "/provider/offers", icon: Inbox },
   { name: "Reviews", href: "/provider/reviews", icon: Star },
   { name: "Profile", href: "/provider/profile", icon: User },
+  { name: "Payments", href: "/provider/payments", icon: Briefcase },
 ];
 
 export default function ProviderSidebar() {
