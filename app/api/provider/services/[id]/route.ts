@@ -1,10 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth/get-user";
-import { writeFile, mkdir, unlink } from "fs/promises";
-import path from "path";
-import { randomUUID } from "crypto";
-import fs from "fs";
 
 export async function GET(
   _req: Request,
@@ -51,21 +47,13 @@ export async function PATCH(
 
     if (removeImage === "true") {
       imageUrl = null;
-      // delete old file if exists
-      if (existing.image) {
-        const oldPath = path.join(process.cwd(), "public", existing.image);
-        if (fs.existsSync(oldPath)) await unlink(oldPath).catch(()=>{});
-      }
     }
 
     if (imageFile && imageFile.size > 0) {
       const buffer = Buffer.from(await imageFile.arrayBuffer());
-      const ext = path.extname(imageFile.name) || ".jpg";
-      const filename = `${randomUUID()}${ext}`;
-      const uploadDir = path.join(process.cwd(), "public", "uploads", "services");
-      await mkdir(uploadDir, { recursive: true });
-      await writeFile(path.join(uploadDir, filename), buffer);
-      imageUrl = `/uploads/services/${filename}`;
+      const mimeType = imageFile.type || "image/jpeg";
+      const base64 = buffer.toString("base64");
+      imageUrl = `data:${mimeType};base64,${base64}`;
     }
 
     const updated = await prisma.service.update({
