@@ -7,6 +7,7 @@ import { toast } from "sonner";
 export default function BookingActions({ bookingId, status, isPaid }: { bookingId: string; status: string; isPaid: boolean }) {
   const [loading, setLoading] = useState("");
   const router = useRouter();
+  const s = status?.toUpperCase().trim(); // FIX HERE
 
   async function updateStatus(newStatus: string) {
     setLoading(newStatus);
@@ -22,12 +23,13 @@ export default function BookingActions({ bookingId, status, isPaid }: { bookingI
       router.refresh();
     } catch (e: any) {
       toast.error(e.message || "Failed");
+      console.error(e);
     } finally {
       setLoading("");
     }
   }
 
-  if (status === "PENDING") {
+  if (s.includes("PENDING")) { // FIX: includes, not ===
     return (
       <div className="flex gap-2">
         <Button size="sm" className="h-8 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-xs" disabled={!!loading} onClick={() => updateStatus("ACCEPTED")}>{loading === "ACCEPTED"? "..." : "Accept"}</Button>
@@ -36,7 +38,7 @@ export default function BookingActions({ bookingId, status, isPaid }: { bookingI
     );
   }
 
-  if (status === "ACCEPTED") {
+  if (s === "ACCEPTED") {
     return (
       <Button size="sm" className="h-8 rounded-lg bg-blue-600 text-xs" disabled={!isPaid ||!!loading} onClick={() => updateStatus("COMPLETED")} title={!isPaid? "Payment required before completion" : ""}>
         {loading === "COMPLETED"? "..." : isPaid? "Complete" : "Unpaid"}
@@ -44,5 +46,5 @@ export default function BookingActions({ bookingId, status, isPaid }: { bookingI
     );
   }
 
-  return null;
+  return <span className="text-xs text-slate-400">{s}</span>;
 }

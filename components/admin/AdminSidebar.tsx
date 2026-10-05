@@ -59,34 +59,38 @@ export default function AdminSidebar() {
 
   return (
     <>
-      {/* MOBILE TOP BAR */}
-      <div className="sticky top-0 z-30 flex h-14 items-center justify-between bg-slate-900 px-4 text-white md:hidden">
+      {/* DARK BAR - STICKY BELOW WHITE NAVBAR */}
+      <div className="sticky top-14 z-30 flex h-14 items-center justify-between bg-slate-900 px-4 text-white md:hidden">
         <div>
-          <h1 className="text-sm font-bold leading-none">KaamSewa</h1>
-          <p className="text-xs text-slate-400">Admin Panel</p>
+          <h1 className="text-base font-bold leading-none">KaamSewa</h1>
+          <p className="text-xs text-slate-400">Customer Panel</p>
         </div>
-        <button onClick={() => setOpen(true)} className="grid h-9 w-9 place-items-center rounded-full bg-slate-800">
-          <Menu size={18} />
+        <button onClick={() => setOpen(!open)} className="grid h-9 w-9 place-items-center rounded-full bg-slate-800">
+          {open ? <X size={18} /> : <Menu size={18} />}
         </button>
       </div>
 
-      {/* MOBILE DRAWER */}
-      <div className={`fixed inset-0 z-[100] md:hidden ${open ? "visible" : "invisible"}`}>
-        <div onClick={() => setOpen(false)} className={`absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity ${open ? "opacity-100" : "opacity-0"}`} />
-        <aside className={`absolute left-0 top-0 flex h-[100dvh] w-[60%] max-w-[300px] flex-col bg-slate-900 text-white shadow-2xl transition-transform duration-300 ${open ? "translate-x-0" : "-translate-x-full"}`}>
-          <div className="flex h-14 shrink-0 items-center justify-between border-b border-slate-800 px-4">
-            <h1 className="text-sm font-bold">KaamSewa</h1>
+      {/* MOBILE DRAWER - HIGH Z-INDEX WHEN OPEN */}
+      <div className={`fixed inset-0 top-30 md:hidden ${open ? "z-[100] visible" : "z-0 invisible"}`}>
+        {/* Backdrop */}
+        <div
+          onClick={() => setOpen(false)}
+          className={`absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity ${open ? "opacity-100" : "opacity-0"
+            }`}
+        />
+        {/* Sidebar - highest z */}
+        <aside
+          className={`absolute left-0 top-0 z-[101] flex h-[100dvh] w-[60%] max-w-[300px] flex-col bg-slate-900 text-white shadow-2xl transition-transform duration-300 ${open ? "translate-x-0" : "-translate-x-full"
+            }`}
+        >
+          <div className="flex h-14 items-center justify-between border-b border-slate-800 px-4">
+            <span className="font-bold">Menu</span>
             <button onClick={() => setOpen(false)} className="grid h-8 w-8 place-items-center rounded-full bg-slate-800">
               <X size={16} />
             </button>
           </div>
-          <div className="h-0 flex-1 overflow-y-auto no-scrollbar">
+          <div className="flex-1 overflow-y-auto pt-2">
             <Nav onClick={() => setOpen(false)} />
-          </div>
-          <div className="shrink-0 border-t border-slate-800 bg-slate-900 p-3">
-            <button onClick={handleLogout} className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm text-slate-300 hover:bg-red-600 hover:text-white">
-              <LogOut size={18} /> Logout
-            </button>
           </div>
         </aside>
       </div>

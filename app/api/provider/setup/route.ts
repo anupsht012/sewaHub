@@ -1,8 +1,6 @@
 import { NextResponse, NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/auth/get-user";
-import { writeFile, mkdir } from "fs/promises";
-import path from "path";
 
 export async function GET() {
   try {
@@ -28,7 +26,6 @@ export async function POST(req: NextRequest) {
     if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     if (user.role !== "PROVIDER") return NextResponse.json({ error: "Only providers can create profiles" }, { status: 403 });
 
-    // ✅ Handle both FormData (with cover image) and JSON (old)
     let bio = "";
     let location = "";
     let category = "";
@@ -47,14 +44,10 @@ export async function POST(req: NextRequest) {
         if (file.size > 3 * 1024 * 1024) {
           return NextResponse.json({ error: "Cover max 3MB" }, { status: 400 });
         }
-        const bytes = await file.arrayBuffer();
-        const buffer = Buffer.from(bytes);
-        const ext = file.name.split(".").pop() || "jpg";
-        const fileName = `${user.id}-${Date.now()}.${ext}`;
-        const dir = path.join(process.cwd(), "public/uploads/providers");
-        await mkdir(dir, { recursive: true });
-        await writeFile(path.join(dir, fileName), buffer);
-        coverImagePath = `/uploads/providers/${fileName}`;
+        const buffer = Buffer.from(await file.arrayBuffer());
+        const base64 = buffer.toString("base64");
+        const mimeType = file.type || "image/jpeg";
+        coverImagePath = `data:${mimeType};base64,${base64}`;
       }
     } else {
       const body = await req.json();
@@ -68,7 +61,6 @@ export async function POST(req: NextRequest) {
 
     const existing = await prisma.provider.findUnique({ where: { userId: user.id } });
     if (existing) {
-      // ✅ Allow update instead of blocking — so provider can add cover later
       const updated = await prisma.provider.update({
         where: { userId: user.id },
         data: {

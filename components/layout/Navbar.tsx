@@ -115,8 +115,8 @@ export default function Navbar({ user }: { user?: NavUser | null }) {
               </>
             ) : (
               <>
-                <Link href="/login"><Button variant="outline">Login</Button></Link>
-                <Link href="/register"><Button>Get Started</Button></Link>
+                <Link href="/login"><Button variant="outline" className="cursor-pointer">Login</Button></Link>
+                <Link href="/register"><Button className="cursor-pointer">Get Started</Button></Link>
               </>
             )}
           </div>
@@ -183,10 +183,10 @@ export default function Navbar({ user }: { user?: NavUser | null }) {
             ) : (
               <div className="grid grid-cols-1 gap-2">
                 <Link href="/login" onClick={() => setOpen(false)}>
-                  <Button variant="outline" className="h-11 w-full rounded-xl font-bold">Login</Button>
+                  <Button variant="outline" className=" cursor-pointer h-11 w-full rounded-xl font-bold">Login</Button>
                 </Link>
                 <Link href="/register" onClick={() => setOpen(false)}>
-                  <Button className="h-11 w-full rounded-xl bg-slate-900 font-bold">Get Started</Button>
+                  <Button className="h-11 w-full cursor-pointer  rounded-xl bg-slate-900 font-bold">Get Started</Button>
                 </Link>
               </div>
             )}
