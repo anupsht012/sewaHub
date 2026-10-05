@@ -2,15 +2,12 @@ import "dotenv/config";
 import { defineConfig, env } from "prisma/config";
 
 export default defineConfig({
-
-  schema: "prisma/schema.prisma",
-
-  migrations: {
+  earlyAccess: true,
+  schema: "./prisma/schema.prisma",
+  migrate: {
     seed: "tsx prisma/seed.ts",
   },
-
   datasource: {
     url: env("DATABASE_URL"),
   },
-
 });
